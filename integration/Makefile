@@ -84,7 +84,7 @@ else ifeq ($(EXEC_TYPE),performance)
 else
 	INSTRUMENTATION_OPTS=
 	CLI_EXEC_NAME=8_bit_Hubble_cli.exe
-	GUI_EXEC_NAME=8_bit_Hubble_gui.exe
+	#GUI_EXEC_NAME=8_bit_Hubble_gui.exe
 endif
 
 # All options in a single variable to handle it easily
@@ -167,7 +167,7 @@ all : $(CLI_EXEC_NAME) $(GUI_EXEC_NAME)
 test : $(CLI_TEST_EXEC_NAME)
 
 $(CLI_EXEC_NAME): $(CLI_OBJ) $(CLI_OBJ_ENTRY_POINT)
-	$(COMPILER) $(ALL_OPTS) $(LINK) $(CLI_EXEC_NAME) $(CLI_OBJ_ENTRY_POINT) $(CLI_OBJ) $(LIBM) $(LIBPNG_L)
+	$(COMPILER) $(ALL_OPTS) $(LINK) $(CLI_EXEC_NAME) $(CLI_OBJ_ENTRY_POINT) $(CLI_OBJ) -L$(SRC)/image_writer/ $(LIBM) -limageWriter -lpthread
 
 $(GUI_EXEC_NAME): $(GUI_OBJ) $(GUI_OBJ_ENTRY_POINT)
 	$(COMPILER) $(ALL_OPTS) $(LINK) $(GUI_EXEC_NAME) $(GUI_OBJ_ENTRY_POINT) $(GUI_OBJ) $(LIBM) $(LIBPNG_L) $(LIBGTK_L)
@@ -191,8 +191,9 @@ cli_core.o : $(SRC)/big_bang_core/big_bang_core.c $(SRC)/status_reporter/status_
 gui_core.o : $(SRC)/big_bang_core/big_bang_core.c $(SRC)/status_reporter/status_reporter.h $(SRC)/user_config_checker/user_config_checker.h $(SRC)/image_writer/image_writer.h $(SRC)/canvas/canvas.h $(SRC)/rng/rng.h $(SRC)/galaxy_generator/galaxy_generator.h $(SRC)/app_info/app_info.h
 	$(COMPILER) $(ALL_OPTS) $(GUI_MODE) $(RENAME) gui_core.o $(COMPILE) $(SRC)/big_bang_core/big_bang_core.c 
 
-image_writer.o : $(SRC)/image_writer/image_writer.c $(SRC)/status_reporter/status_reporter.h $(SRC)/canvas/canvas.h $(SRC)/rng/rng.h $(SRC)/app_info/app_info.h
-	$(COMPILER) $(ALL_OPTS) $(LIBPNG_H) $(COMPILE) $(SRC)/image_writer/image_writer.c  
+image_writer.o : $(SRC)/image_writer/image_writer.c $(SRC)/status_reporter/status_reporter.h $(SRC)/canvas/canvas.h $(SRC)/rng/rng.h $(SRC)/app_info/app_info.h $(SRC)/image_writer/imageWriter.h
+	go build -buildmode=c-archive -o $(SRC)/image_writer/libimageWriter.a $(SRC)/image_writer/imageWriter.go
+	$(COMPILER) $(ALL_OPTS) $(COMPILE) $(SRC)/image_writer/image_writer.c  
 
 galaxy_generator.o : $(SRC)/galaxy_generator/galaxy_generator.c $(SRC)/status_reporter/status_reporter.h $(SRC)/canvas/canvas.h $(SRC)/palette/palette.h $(SRC)/rng/rng.h $(SRC)/sprites/sprites.h $(SRC)/brush/brush.h
 	$(COMPILER) $(ALL_OPTS) $(COMPILE) $(SRC)/galaxy_generator/galaxy_generator.c 
