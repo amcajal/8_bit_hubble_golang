@@ -1,6 +1,8 @@
 # 8_bit_hubble_golang
 Reimplementation of 8_bit_hubble project in Golang
 
+Original project: https://github.com/amcajal/8_bit_hubble
+
 Branches:
 - master (entry point of the repository)
 - scratch - all code started from zero using Golang
