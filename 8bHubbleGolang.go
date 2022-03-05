@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"8_bit_hubble_golang/user_config_checker"
+	"8_bit_hubble_golang/sprites"
 	"image"
 	"image/png"
 	"image/draw"
@@ -11,10 +12,8 @@ import (
 	"os"
     "encoding/base64"
     "bytes"
+    "time"
 )
-
-//cross_star_10x10_golang.png
-var sprite string = "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFXRFWHRUaXRsZQA4Yml0SHViYmxlSW1hZ2UhcnPtAAAAQHRFWHREZXNjcmlwdGlvbgBQcm9qZWN0IFVSTDogaHR0cHM6XFxnaXRodWIuY29tL2FtY2FqYWwvOF9iaXRfaHViYmxliG4p0AAAAPF0RVh0Q29weXJpZ2h0ADgtQml0IEh1YmJsZSBDb3B5cmlnaHQgKEMpIDIwMTggQWxiZXJ0byBNYXJ0aW4gQ2FqYWwKVGhpcyBwcm9ncmFtIGNvbWVzIHdpdGggQUJTT0xVVEVMWSBOTyBXQVJSQU5UWTsKVGhpcyBpcyBmcmVlIHNvZnR3YXJlIGRpc3RyaWJ1dGVkIHVuZGVyIEdOVSBHUEwgdjMuMCBMaWNlbnNlLgpGb3IgbW9yZSBkZXRhaWxzLCB2aXNpdCBodHRwczpcXHd3dy5nbnUub3JnXGxpY2Vuc2VzXGdwbC0zLjAuZW4uaHRtbDrE28YAAAAsdEVYdENyZWF0aW9uIFRpbWUAdmllIDI4IGVuZSAyMDIyIDIzOjEwOjU1ICswMTAwbUFD5AAAAAd0SU1FB+YBHBYLEM2OhcUAAAAJcEhZcwAAHsEAAB7BAcNpVFMAAAAEZ0FNQQAAsY8L/GEFAAAAPUlEQVR42mNgYNjyn4EggKvBpxhN7j8QoApu+Q8RgwBGnDrhwIcRiyDEFEzTGRiYCHuEXKsJeYaU4CEuwAFRtzO3mVJEaQAAAABJRU5ErkJggg=="
 
 
 func main() {
@@ -29,12 +28,12 @@ func main() {
 	fmt.Printf("Options are: %v %v %v\n", *outputDir, *pngName, *seed)
 	
 	// Initialize seed
-	rand.Seed(42)
+	rand.Seed(time.Now().Unix())
 	
     user_config_checker.Proto()
     
     // Turn base64 string into png image
-    pngSprite := b64ToPng(sprite);
+    pngSprite := sprites.GetSprite(sprites.Small)
     
     // Create image of fixed dimensions
     dim_x, dim_y := 500, 500
