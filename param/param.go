@@ -10,15 +10,15 @@ import (
 
 const pngExt string = ".png"
 
-var outputDir string
-var pngName string
-var seed int64
+var OutputDir string
+var PngName string
+var Seed int64
 
 func CheckParams() error {
 
-	flag.StringVar(&outputDir, "o", "./", "Output directory to save the png")
-	flag.StringVar(&pngName, "n", "8bh_galaxy.png", "Name of the png image")
-	flag.Int64Var(&seed, "s", 42, "Seed to be used in the image generation")
+	flag.StringVar(&OutputDir, "o", "./", "Output directory to save the png")
+	flag.StringVar(&PngName, "n", "8bh_galaxy.png", "Name of the png image")
+	flag.Int64Var(&Seed, "s", 42, "Seed to be used in the image generation")
 
 	flag.Parse()
 
@@ -26,7 +26,7 @@ func CheckParams() error {
 		return paramError
 	}
 
-	appendExtension(&pngName)
+	appendExtension()
 
 	return nil
 }
@@ -34,27 +34,27 @@ func CheckParams() error {
 // Output directory must exist and have write perms
 func checkOutputDir() error {
 
-	status, err := os.Stat(outputDir)
+	status, err := os.Stat(OutputDir)
 	if err != nil {
 		return err
 	}
 
 	if !status.IsDir() {
-		return errors.New("Provided output dir (" + outputDir + ") is NOT a directory")
+		return errors.New("Provided output dir (" + OutputDir + ") is NOT a directory")
 	}
 
-    // @TODO this only works if the user launching the app is the owner of the target directory
+	// @TODO this only works if the user launching the app is the owner of the target directory
 	// Probably there is a better way to do this:
 	// Isolate owner's read and write bits, and check both are high
 	if rw := ((status.Mode()) >> 0x07) & 0x03; rw != 0x03 {
-		return errors.New("Provided output dir (" + outputDir + ") DOES NOT HAVE read and write perms")
+		return errors.New("Provided output dir (" + OutputDir + ") DOES NOT HAVE read and write perms")
 	}
 
 	return nil
 }
 
-func appendExtension(pngName *string) {
-	if !strings.HasSuffix(*pngName, pngExt) {
-		*pngName = *pngName + pngExt
+func appendExtension() {
+	if !strings.HasSuffix(PngName, pngExt) {
+		PngName = PngName + pngExt
 	}
 }
