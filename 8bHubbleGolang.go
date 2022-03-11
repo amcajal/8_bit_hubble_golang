@@ -1,36 +1,27 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"8_bit_hubble_golang/user_config_checker"
+	"8_bit_hubble_golang/param"
 	"8_bit_hubble_golang/sprites"
 	"image"
 	"image/png"
 	"image/draw"
 	"math/rand"
 	"os"
-    "encoding/base64"
-    "bytes"
-    "time"
+    "log"
 )
 
 
 func main() {
 
-    // Simulating CLI module from original project
-	outputDir := flag.String("o", "./", "Output directory to save the png")
-	pngName := flag.String("n", "8bh_galaxy.png", "Name of the png image")
-	seed := flag.Int("s", 42, "Seed to be used in the image generation")
-
-	flag.Parse()
-
-	fmt.Printf("Options are: %v %v %v\n", *outputDir, *pngName, *seed)
-	
+    // Check parameters are correct
+    err := param.CheckParams()
+    if err != nil {
+        log.Fatal(err)
+    }
+    
 	// Initialize seed
-	rand.Seed(time.Now().Unix())
-	
-    user_config_checker.Proto()
+	rand.Seed(param.Seed)
     
     // Turn base64 string into png image
     pngSprite := sprites.GetSprite(sprites.Small)
@@ -52,25 +43,11 @@ func main() {
     }
     
     // Save image
-    writer, err := os.Create("./galaxy.png")
+    writer, err := os.Create(param.OutputDir + "/" + param.PngName)
     if err != nil {
-        fmt.Println("Could not create galaxy.png")
+        log.Fatal(err)
     }
     defer writer.Close()
     
     png.Encode(writer, rgba)
-}
-
-func b64ToPng(b64string string) image.Image {
-
-    // Do the opposite: turn the string back into the original byte array
-    originalData, _ := base64.StdEncoding.DecodeString(b64string)
-    
-    // Instead of a file descriptor to a file, get a "file descriptor" to the byte slice
-    reader := bytes.NewReader(originalData)
-    
-    // create the in memory structure of the image
-    img, _ := png.Decode(reader)
-    
-    return img
 }
