@@ -6,6 +6,7 @@ import (
 	"flag"
 	"os"
 	"strings"
+	"time"
 )
 
 const pngExt string = ".png"
@@ -18,7 +19,7 @@ func CheckParams() error {
 
 	flag.StringVar(&OutputDir, "o", "./", "Output directory to save the png")
 	flag.StringVar(&PngName, "n", "8bh_galaxy.png", "Name of the png image")
-	flag.Int64Var(&Seed, "s", 42, "Seed to be used in the image generation")
+	flag.Int64Var(&Seed, "s", time.Now().Unix(), "Seed to be used in the image generation")
 
 	flag.Parse()
 
