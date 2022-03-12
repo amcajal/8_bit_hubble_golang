@@ -2,9 +2,9 @@
 package galaxy
 
 import (
-	"8_bit_hubble_golang/palette"
-	"8_bit_hubble_golang/param"
-	"8_bit_hubble_golang/sprites"
+	"github.com/amcajal/8_bit_hubble_golang/palette"
+	"github.com/amcajal/8_bit_hubble_golang/param"
+	"github.com/amcajal/8_bit_hubble_golang/sprites"
 	"image"
 	"image/color"
 	"image/draw"

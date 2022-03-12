@@ -1,8 +1,8 @@
 package main
 
 import (
-	"8_bit_hubble_golang/galaxy"
-	"8_bit_hubble_golang/param"
+	"github.com/amcajal/8_bit_hubble_golang/galaxy"
+	"github.com/amcajal/8_bit_hubble_golang/param"
 	"log"
 	"math/rand"
 )
