@@ -46,12 +46,15 @@ func clamp(value float64) uint32 {
 	}
 }
 
-// Given a RGB color, change its hue, without affecting its saturation or value
+// Given a PREMULTIPILIED ALPHA RGB components, change its hue, 
+// without affecting its saturation or value
 // It requires the setHueRotation function to be already executed with the new hue
 func ChangeHue(r, g, b uint32) (nr, ng, nb uint32) {
-	rf := float64(r)
-	gf := float64(g)
-	bf := float64(b)
+
+    // Components are divided by 0x101 to scale them to 0..255 values
+	rf := float64(r/0x101)
+	gf := float64(g/0x101)
+	bf := float64(b/0x101)
 
 	rx := rf*rM[0][0] + gf*rM[0][1] + bf*rM[0][2]
 	gx := rf*rM[1][0] + gf*rM[1][1] + bf*rM[1][2]
