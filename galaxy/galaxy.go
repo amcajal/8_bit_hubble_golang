@@ -30,7 +30,7 @@ func GenerateGalaxy() error {
 
 	// Set canvas dimensions
 	canvas = image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
-	
+
 	// Paint background
 	paintBackground()
 
@@ -58,8 +58,8 @@ func GenerateGalaxy() error {
 }
 
 func paintBackground() {
-    black := color.RGBA{0, 0, 0, 255}
-    draw.Draw(canvas, canvas.Bounds(), &image.Uniform{black}, image.ZP, draw.Src)
+	black := color.RGBA{0, 0, 0, 255}
+	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{black}, image.ZP, draw.Src)
 }
 
 func paintSprite(spriteSize sprites.Size) {
@@ -84,13 +84,13 @@ func paintSprite(spriteSize sprites.Size) {
 		for e := 0; e <= elements; e++ {
 
 			// Random position (coordinates) in the image
-			x_c := rand.Intn(dim_x);
-            y_c := rand.Intn(dim_y);
+			x_c := rand.Intn(dim_x)
+			y_c := rand.Intn(dim_y)
 
 			// Draw the sprite
-            dp := image.Pt(x_c, y_c)
-            r := image.Rectangle{dp, dp.Add(sb.Size())}
-            draw.Draw(canvas, r, sprite, sb.Min, draw.Over)
+			dp := image.Pt(x_c, y_c)
+			r := image.Rectangle{dp, dp.Add(sb.Size())}
+			draw.Draw(canvas, r, sprite, sb.Min, draw.Over)
 		}
 	}
 }
@@ -118,18 +118,18 @@ func changeColor(sprite *image.Image) {
 					uint8(ng & 0xFF),
 					uint8(nb & 0xFF),
 					uint8(a & 0xFF)}
-				
+
 				// All standard sprites should be of thesame type, but for some
 				// reason, program detects some of them as NRGBA, and other as RGBA
-                switch (*sprite).(type) {
-                    case *image.RGBA:
-                        (*sprite).(*image.RGBA).Set(row, col, new_rgb)
-                    case *image.NRGBA:
-                        (*sprite).(*image.NRGBA).Set(row, col, new_rgb)
-                    default:
-                        panic("Error: Invalid Sprite type (neither RGBA nor NRGBA)")
-                }
-				
+				switch (*sprite).(type) {
+				case *image.RGBA:
+					(*sprite).(*image.RGBA).Set(row, col, new_rgb)
+				case *image.NRGBA:
+					(*sprite).(*image.NRGBA).Set(row, col, new_rgb)
+				default:
+					panic("Error: Invalid Sprite type (neither RGBA nor NRGBA)")
+				}
+
 			}
 		}
 	}
