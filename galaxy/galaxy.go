@@ -21,10 +21,14 @@ const dim_x int = 500 // width
 const dim_y int = 500 // height
 
 // Max number of layers per sprite size
-const maxLayers int = 5
+const smallSpriteMaxLayers int = 10
+const mediumSpriteMaxLayers int = 5
+const largeSpriteMaxLayers int = 2
 
-// Max number of sprites (of same size) per layer
-const maxSprites int = 100
+// Max number of sprites (of same size) per sprite size
+const smallSpriteMaxSprites int = 50
+const mediumSpriteMaxSprites int = 25
+const largeSpriteMaxSprites int = 10
 
 func GenerateGalaxy() error {
 
@@ -35,13 +39,13 @@ func GenerateGalaxy() error {
 	paintBackground()
 
 	// Paint small stars
-	paintSprite(sprites.Small)
+	paintSprite(sprites.Small, smallSpriteMaxLayers, smallSpriteMaxSprites) 
 
 	// Paint medium starts
-	paintSprite(sprites.Medium)
+	paintSprite(sprites.Medium, mediumSpriteMaxLayers, mediumSpriteMaxSprites) 
 
 	// Paint big stars
-	paintSprite(sprites.Large)
+	paintSprite(sprites.Large, largeSpriteMaxLayers, largeSpriteMaxSprites) 
 
 	// Save image
 	writer, err := os.Create(param.OutputDir + "/" + param.PngName)
@@ -62,7 +66,7 @@ func paintBackground() {
 	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{black}, image.ZP, draw.Src)
 }
 
-func paintSprite(spriteSize sprites.Size) {
+func paintSprite(spriteSize sprites.Size, maxLayers int, maxSprites int) {
 
 	// Number of layers for this sprite size
 	layers := rand.Intn(maxLayers)
