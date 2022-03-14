@@ -16,6 +16,7 @@ const (
 	Small Size = iota
 	Medium
 	Large
+	Special
 )
 
 func GetSprite(spriteSize Size) (sprite image.Image) {
@@ -25,8 +26,10 @@ func GetSprite(spriteSize Size) (sprite image.Image) {
 		targetSlice = smallSprites[:]
 	} else if spriteSize == Medium {
 		targetSlice = mediumSprites[:]
-	} else { //spriteSize == Large
+	} else if spriteSize == Large{
 		targetSlice = bigSprites[:]
+	} else { //spriteSize == Special
+	    targetSlice = specialSprites[:]
 	}
 
 	index := rand.Intn(len(targetSlice))
