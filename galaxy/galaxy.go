@@ -24,11 +24,13 @@ const dim_y int = 500 // height
 const smallSpriteMaxLayers int = 10
 const mediumSpriteMaxLayers int = 5
 const largeSpriteMaxLayers int = 2
+const specialSpriteMaxLayers int = 1
 
 // Max number of sprites (of same size) per sprite size
 const smallSpriteMaxSprites int = 50
 const mediumSpriteMaxSprites int = 25
 const largeSpriteMaxSprites int = 10
+const specialSpriteMaxSprites int = 2
 
 func GenerateGalaxy() error {
 
@@ -39,13 +41,16 @@ func GenerateGalaxy() error {
 	paintBackground()
 
 	// Paint small stars
-	paintSprite(sprites.Small, smallSpriteMaxLayers, smallSpriteMaxSprites) 
+	paintSprite(sprites.Small, smallSpriteMaxLayers, smallSpriteMaxSprites)
 
 	// Paint medium starts
-	paintSprite(sprites.Medium, mediumSpriteMaxLayers, mediumSpriteMaxSprites) 
+	paintSprite(sprites.Medium, mediumSpriteMaxLayers, mediumSpriteMaxSprites)
 
 	// Paint big stars
-	paintSprite(sprites.Large, largeSpriteMaxLayers, largeSpriteMaxSprites) 
+	paintSprite(sprites.Large, largeSpriteMaxLayers, largeSpriteMaxSprites)
+
+	// Paint special sprites
+	paintSprite(sprites.Special, specialSpriteMaxLayers, specialSpriteMaxSprites)
 
 	// Save image
 	writer, err := os.Create(param.OutputDir + "/" + param.PngName)
