@@ -3,13 +3,9 @@ package palette
 import (
 	"bytes"
 	"encoding/base64"
-	_ "fmt"
 	"image"
 	"image/color"
-	_ "image/draw"
 	"image/png"
-	_ "math/rand"
-	_ "os"
 	"testing"
 )
 
