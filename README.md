@@ -1,3 +1,4 @@
+
 Scratch Branch: 8-bit Hubble rewritten in Golang
 
 Although original code and design is used as reference: https://github.com/amcajal/8_bit_hubble
@@ -31,5 +32,3 @@ types allows to execute cool operations, like rescaling algorithms.
 
 I.e: create a "planet" sprite with Gimp, save to base64, decode into image.Image, and reescale it 5 times to create
 a Jupiter-alike sprite.
-
-
