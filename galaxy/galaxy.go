@@ -88,7 +88,7 @@ func paintSprite(spriteSize sprites.Size) {
 			// Draw the sprite
             dp := image.Pt(x_c, y_c)
             r := image.Rectangle{dp, dp.Add(sb.Size())}
-            draw.Draw(canvas, r, sprite, sb.Min, draw.Src)
+            draw.Draw(canvas, r, sprite, sb.Min, draw.Over)
 		}
 	}
 }
