@@ -31,11 +31,8 @@ func GenerateGalaxy() error {
 	// Set canvas dimensions
 	canvas = image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
 	
-	// Initialize canvas to black
-	//@TODO
-
 	// Paint background
-	//@TODO
+	paintBackground()
 
 	// Paint small stars
 	paintSprite(sprites.Small)
@@ -58,6 +55,11 @@ func GenerateGalaxy() error {
 	}
 
 	return nil
+}
+
+func paintBackground() {
+    black := color.RGBA{0, 0, 0, 255}
+    draw.Draw(canvas, canvas.Bounds(), &image.Uniform{black}, image.ZP, draw.Src)
 }
 
 func paintSprite(spriteSize sprites.Size) {
