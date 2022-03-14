@@ -1,9 +1,19 @@
+<!--- PROJECT LOGO --->
+![project_logo](https://github.com/amcajal/8_bit_hubble/blob/master/project/doc/media/8_bit_hubble_golang_logo.png)
 
-Scratch Branch: 8-bit Hubble rewritten in Golang
+<!--- PROJECT SUMMARY/OVERVIEW --->
+Reimplementation of **8_bit_hubble project** in Golang
+Original project: https://github.com/amcajal/8_bit_hubble
 
-Although original code and design is used as reference: https://github.com/amcajal/8_bit_hubble
+Branches:
+- master (entry point of the repository)
+- scratch - all code started from zero using Golang
+- replacement - certain C functionality is replaced (C-Golang bindings)
 
-Core changes:
+Replacement branch keeps most of the C code, but uses go to generate the PNG images
+
+Core changes in the Golang version:
+- All is implemented with Go.
 - libpng is no longer used. All PNG operations are performed using the standard library (image package and so)
 - Sprites are now handled in a completely different way (more details later)
 
