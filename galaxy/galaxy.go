@@ -24,13 +24,13 @@ const dim_y int = 500 // height
 const smallSpriteMaxLayers int = 10
 const mediumSpriteMaxLayers int = 5
 const largeSpriteMaxLayers int = 2
-const specialSpriteMaxLayers int = 1
+const specialSpriteMaxLayers int = 3
 
 // Max number of sprites (of same size) per sprite size
 const smallSpriteMaxSprites int = 50
 const mediumSpriteMaxSprites int = 25
 const largeSpriteMaxSprites int = 10
-const specialSpriteMaxSprites int = 2
+const specialSpriteMaxSprites int = 1
 
 func GenerateGalaxy() error {
 
