@@ -8,6 +8,7 @@ import (
 	"image"
 	"image/png"
 	"math/rand"
+	"github.com/amcajal/pixelart/scale"
 )
 
 type Size uint8
@@ -33,7 +34,15 @@ func GetSprite(spriteSize Size) (sprite image.Image) {
 	}
 
 	index := rand.Intn(len(targetSlice))
-	return base64ToPng(targetSlice[index])
+	sprite = base64ToPng(targetSlice[index])
+	
+	if spriteSize == Special {
+	    if p:= rand.Intn(2); p == 1 {
+	        sprite = scale.Scale2X(sprite.(*image.NRGBA))
+	    }
+	}
+	
+	return 
 }
 
 func base64ToPng(b64string string) image.Image {
