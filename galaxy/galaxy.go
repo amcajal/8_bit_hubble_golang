@@ -74,12 +74,12 @@ func paintBackground() {
 func paintSprite(spriteSize sprites.Size, maxLayers int, maxSprites int) {
 
 	// Number of layers for this sprite size
-	layers := rand.Intn(maxLayers)
+	layers := rand.Intn(maxLayers+1)
 
-	for l := 0; l <= layers; l++ {
+	for l := 1; l <= layers; l++ {
 
 		// Number of sprites to be painted
-		elements := rand.Intn(maxSprites)
+		elements := rand.Intn(maxSprites+1)
 
 		// Decide sprite to be painted
 		sprite := sprites.GetSprite(spriteSize)
@@ -90,7 +90,7 @@ func paintSprite(spriteSize sprites.Size, maxLayers int, maxSprites int) {
 		// Decide color
 		changeColor(&sprite)
 
-		for e := 0; e <= elements; e++ {
+		for e := 1; e <= elements; e++ {
 
 			// Random position (coordinates) in the image
 			x_c := rand.Intn(dim_x)
