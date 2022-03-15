@@ -37,12 +37,21 @@ func GetSprite(spriteSize Size) (sprite image.Image) {
 	sprite = base64ToPng(targetSlice[index])
 	
 	if spriteSize == Special {
-	    if p:= rand.Intn(2); p == 1 {
-	        sprite = scale.Scale2X(sprite.(*image.NRGBA))
-	    }
+	    sprite = rescaleSprite(sprite)
 	}
 	
 	return 
+}
+
+func rescaleSprite(sprite image.Image) (newSprite image.Image) {
+    newSprite = sprite
+    
+    if p:= rand.Intn(4); p < 2 {
+        for i := 0; i <= p; i++ {
+            newSprite = scale.Scale2X(sprite.(*image.NRGBA))
+        }
+    }
+    return
 }
 
 func base64ToPng(b64string string) image.Image {
