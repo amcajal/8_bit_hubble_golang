@@ -32,6 +32,10 @@ const mediumSpriteMaxSprites int = 25
 const largeSpriteMaxSprites int = 10
 const specialSpriteMaxSprites int = 1
 
+// Chances (or probability)
+const defChance int = 100
+const specialChance int = 50
+
 func GenerateGalaxy() error {
 
 	// Set canvas dimensions
@@ -41,16 +45,16 @@ func GenerateGalaxy() error {
 	paintBackground()
 
 	// Paint small stars
-	paintSprite(sprites.Small, smallSpriteMaxLayers, smallSpriteMaxSprites)
+	paintSprite(sprites.Small, smallSpriteMaxLayers, smallSpriteMaxSprites, defChance)
 
 	// Paint medium starts
-	paintSprite(sprites.Medium, mediumSpriteMaxLayers, mediumSpriteMaxSprites)
+	paintSprite(sprites.Medium, mediumSpriteMaxLayers, mediumSpriteMaxSprites, defChance)
 
 	// Paint big stars
-	paintSprite(sprites.Large, largeSpriteMaxLayers, largeSpriteMaxSprites)
+	paintSprite(sprites.Large, largeSpriteMaxLayers, largeSpriteMaxSprites, defChance)
 
 	// Paint special sprites
-	paintSprite(sprites.Special, specialSpriteMaxLayers, specialSpriteMaxSprites)
+	paintSprite(sprites.Special, specialSpriteMaxLayers, specialSpriteMaxSprites, specialChance)
 
 	// Save image
 	writer, err := os.Create(param.OutputDir + "/" + param.PngName)
@@ -71,7 +75,11 @@ func paintBackground() {
 	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{black}, image.ZP, draw.Src)
 }
 
-func paintSprite(spriteSize sprites.Size, maxLayers int, maxSprites int) {
+func paintSprite(spriteSize sprites.Size, maxLayers int, maxSprites int, chance int) {
+
+    if p := rand.Intn(100); p > chance {
+        return;
+    }    
 
 	// Number of layers for this sprite size
 	layers := rand.Intn(maxLayers+1)
