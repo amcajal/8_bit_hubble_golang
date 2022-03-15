@@ -75,6 +75,8 @@ func paintBackground() {
 	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{black}, image.ZP, draw.Src)
 }
 
+// There is a chance% probability of painting sprites. If success, paint
+// 0 to maxLayers, each one with 0 to maxSprites of spriteSize type.
 func paintSprite(spriteSize sprites.Size, maxLayers int, maxSprites int, chance int) {
 
     if p := rand.Intn(100); p > chance {
