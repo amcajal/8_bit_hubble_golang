@@ -7,8 +7,9 @@ import (
 	"encoding/base64"
 	"image"
 	"image/png"
-	"math/rand"
+	"sort"
 
+	"github.com/amcajal/8_bit_hubble_golang/rngm"
 	"github.com/amcajal/pixelart/scale"
 )
 
@@ -66,16 +67,13 @@ func GetSprite(spriteSize Size) (img image.Image) {
 		targetMap = specialSprites
 	}
 
-	// Pick a random entry from the map
-	index := rand.Intn(len(targetMap))
-	i := 0
-	for _, b64 := range targetMap {
-		if i == index {
-			img = base64ToPng(b64)
-			break
-		}
-		i++
+	// Sort keys for deterministic iteration, then pick a random one
+	keys := make([]string, 0, len(targetMap))
+	for k := range targetMap {
+		keys = append(keys, k)
 	}
+	sort.Strings(keys)
+	img = base64ToPng(targetMap[keys[rngm.Intn(len(keys))]])
 
 	if spriteSize == Special {
 		img = rescaleSprite(img)
@@ -87,7 +85,7 @@ func GetSprite(spriteSize Size) (img image.Image) {
 func rescaleSprite(sprite image.Image) (newSprite image.Image) {
 	newSprite = sprite
 
-	if p := rand.Intn(4); p < 2 {
+	if p := rngm.Intn(4); p < 2 {
 		for i := 0; i <= p; i++ {
 			newSprite = scale.Scale2X(sprite.(*image.NRGBA))
 		}

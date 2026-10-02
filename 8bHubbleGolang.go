@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/amcajal/8_bit_hubble_golang/galaxy"
 	"github.com/amcajal/8_bit_hubble_golang/param"
+	"github.com/amcajal/8_bit_hubble_golang/rngm"
 	"log"
-	"math/rand"
 )
 
 func main() {
@@ -14,8 +14,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Initialize seed
-	rand.Seed(param.Seed)
+	// Initialize seeded random source (enables deterministic output via -s flag)
+	rngm.Init(param.Seed)
 
 	// Generate galaxy
 	if err := galaxy.GenerateGalaxy(); err != nil {

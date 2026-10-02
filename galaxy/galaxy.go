@@ -9,7 +9,7 @@ import (
 	"image/color"
 	"image/draw"
 	"image/png"
-	"math/rand"
+	"github.com/amcajal/8_bit_hubble_golang/rngm"
 	"os"
 )
 
@@ -72,24 +72,24 @@ func GenerateGalaxy() error {
 
 func paintBackground() {
 	black := color.RGBA{0, 0, 0, 255}
-	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{black}, image.ZP, draw.Src)
+	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{black}, image.Point{}, draw.Src)
 }
 
 // There is a chance% probability of painting sprites. If success, paint
 // 0 to maxLayers, each one with 0 to maxSprites of spriteSize type.
 func paintSprite(spriteSize sprites.Size, maxLayers int, maxSprites int, chance int) {
 
-    if p := rand.Intn(100); p > chance {
+    if p := rngm.Intn(100); p > chance {
         return;
     }    
 
 	// Number of layers for this sprite size
-	layers := rand.Intn(maxLayers+1)
+	layers := rngm.Intn(maxLayers+1)
 
 	for l := 1; l <= layers; l++ {
 
 		// Number of sprites to be painted
-		elements := rand.Intn(maxSprites+1)
+		elements := rngm.Intn(maxSprites+1)
 
 		// Decide sprite to be painted
 		sprite := sprites.GetSprite(spriteSize)
@@ -103,8 +103,8 @@ func paintSprite(spriteSize sprites.Size, maxLayers int, maxSprites int, chance 
 		for e := 1; e <= elements; e++ {
 
 			// Random position (coordinates) in the image
-			x_c := rand.Intn(dim_x)
-			y_c := rand.Intn(dim_y)
+			x_c := rngm.Intn(dim_x)
+			y_c := rngm.Intn(dim_y)
 
 			// Draw the sprite
 			dp := image.Pt(x_c, y_c)
@@ -120,7 +120,7 @@ func changeColor(sprite *image.Image) {
 	sb := (*sprite).Bounds()
 
 	// Change the hue of the sprite
-	palette.SetHueRotation(rand.Intn(361)) // 0 degrees to 360 degrees
+	palette.SetHueRotation(rngm.Intn(361)) // 0 degrees to 360 degrees
 
 	// Colorize pixels of the sprite
 	rows, columns := sb.Max.X, sb.Max.Y
