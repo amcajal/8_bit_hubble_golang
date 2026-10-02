@@ -2,15 +2,17 @@
 package galaxy
 
 import (
-	"github.com/amcajal/8_bit_hubble_golang/palette"
-	"github.com/amcajal/8_bit_hubble_golang/param"
-	"github.com/amcajal/8_bit_hubble_golang/sprites"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/png"
 	"math/rand"
 	"os"
+
+	"github.com/amcajal/8_bit_hubble_golang/palette"
+	"github.com/amcajal/8_bit_hubble_golang/param"
+	"github.com/amcajal/8_bit_hubble_golang/rngm"
+	"github.com/amcajal/8_bit_hubble_golang/sprites"
 )
 
 // Output image (the canvas)
@@ -19,22 +21,6 @@ var canvas *image.NRGBA
 // Fixed dimensions of the output image
 const dim_x int = 500 // width
 const dim_y int = 500 // height
-
-// Max number of layers per sprite size
-const smallSpriteMaxLayers int = 10
-const mediumSpriteMaxLayers int = 5
-const largeSpriteMaxLayers int = 2
-const specialSpriteMaxLayers int = 3
-
-// Max number of sprites (of same size) per sprite size
-const smallSpriteMaxSprites int = 50
-const mediumSpriteMaxSprites int = 25
-const largeSpriteMaxSprites int = 10
-const specialSpriteMaxSprites int = 1
-
-// Chances (or probability)
-const defChance int = 100
-const specialChance int = 50
 
 func GenerateGalaxy() error {
 
@@ -45,16 +31,16 @@ func GenerateGalaxy() error {
 	paintBackground()
 
 	// Paint small stars
-	paintSprite(sprites.Small, smallSpriteMaxLayers, smallSpriteMaxSprites, defChance)
+	paintSprite(sprites.Small, rngm.SmallSpriteMaxLayers, rngm.SmallSpriteMaxSprites, rngm.DefChance)
 
-	// Paint medium starts
-	paintSprite(sprites.Medium, mediumSpriteMaxLayers, mediumSpriteMaxSprites, defChance)
+	// Paint medium stars
+	paintSprite(sprites.Medium, rngm.MediumSpriteMaxLayers, rngm.MediumSpriteMaxSprites, rngm.DefChance)
 
 	// Paint big stars
-	paintSprite(sprites.Large, largeSpriteMaxLayers, largeSpriteMaxSprites, defChance)
+	paintSprite(sprites.Large, rngm.LargeSpriteMaxLayers, rngm.LargeSpriteMaxSprites, rngm.DefChance)
 
 	// Paint special sprites
-	paintSprite(sprites.Special, specialSpriteMaxLayers, specialSpriteMaxSprites, specialChance)
+	paintSprite(sprites.Special, rngm.SpecialSpriteMaxLayers, rngm.SpecialSpriteMaxSprites, rngm.SpecialChance)
 
 	// Save image
 	writer, err := os.Create(param.OutputDir + "/" + param.PngName)
@@ -79,17 +65,17 @@ func paintBackground() {
 // 0 to maxLayers, each one with 0 to maxSprites of spriteSize type.
 func paintSprite(spriteSize sprites.Size, maxLayers int, maxSprites int, chance int) {
 
-    if p := rand.Intn(100); p > chance {
-        return;
-    }    
+	if p := rand.Intn(100); p > chance {
+		return
+	}
 
 	// Number of layers for this sprite size
-	layers := rand.Intn(maxLayers+1)
+	layers := rand.Intn(maxLayers + 1)
 
 	for l := 1; l <= layers; l++ {
 
 		// Number of sprites to be painted
-		elements := rand.Intn(maxSprites+1)
+		elements := rand.Intn(maxSprites + 1)
 
 		// Decide sprite to be painted
 		sprite := sprites.GetSprite(spriteSize)
