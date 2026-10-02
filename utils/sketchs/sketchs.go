@@ -14,6 +14,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/base64"
 	"fmt"
 	"image"
 	"image/png"
@@ -49,8 +51,44 @@ func parseNameFlag(args []string) string {
 	return ""
 }
 
+// getAllSprites decodes every sprite and returns a slice of (name, image) pairs.
+func getAllSprites() []struct {
+	name string
+	img  image.Image
+} {
+	all := sprites.AllSprites()
+	result := make([]struct {
+		name string
+		img  image.Image
+	}, 0, len(all))
+	for _, s := range all {
+		result = append(result, struct {
+			name string
+			img  image.Image
+		}{name: s.Name, img: b64ToImage(s.B64Value)})
+	}
+	return result
+}
+
+// findSpriteByName searches AllSprites() for a sprite with the given name.
+func findSpriteByName(name string) (image.Image, bool) {
+	for _, s := range sprites.AllSprites() {
+		if s.Name == name {
+			return b64ToImage(s.B64Value), true
+		}
+	}
+	return nil, false
+}
+
+// b64ToImage decodes a base64-encoded PNG string into an image.Image.
+func b64ToImage(b64string string) image.Image {
+	data, _ := base64.StdEncoding.DecodeString(b64string)
+	img, _ := png.Decode(bytes.NewReader(data))
+	return img
+}
+
 func exportOneSprite(name string, timestamp int64) {
-	img, found := sprites.FindSpriteByName(name)
+	img, found := findSpriteByName(name)
 	if !found {
 		fmt.Fprintf(os.Stderr, "Error: no sprite named %q exists.\n", name)
 		os.Exit(1)
@@ -61,11 +99,11 @@ func exportOneSprite(name string, timestamp int64) {
 }
 
 func exportAllSprites(timestamp int64) {
-	allSprites := sprites.GetAllSprites()
-	fmt.Printf("Found %d sprites. Writing PNG files...\n", len(allSprites))
+	all := getAllSprites()
+	fmt.Printf("Found %d sprites. Writing PNG files...\n", len(all))
 
-	for name, img := range allSprites {
-		writePNG(name, img, timestamp)
+	for _, s := range all {
+		writePNG(s.name, s.img, timestamp)
 	}
 
 	fmt.Println("Done!")
