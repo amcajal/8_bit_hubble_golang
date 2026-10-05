@@ -30,16 +30,16 @@ func GenerateGalaxy() error {
 	paintBackground()
 
 	// Paint small stars
-	paintSprite(sprites.Small, rngm.Config(rngm.KeySmallSpriteMaxLayers), rngm.Config(rngm.KeySmallSpriteMaxSprites), rngm.Config(rngm.KeyDefaultChance))
+	paintSprite(sprites.Small, rngm.Cfg.SmallSpriteMaxLayers, rngm.Cfg.SmallSpriteMaxSprites, rngm.Cfg.DefaultChance)
 
 	// Paint medium stars
-	paintSprite(sprites.Medium, rngm.Config(rngm.KeyMediumSpriteMaxLayers), rngm.Config(rngm.KeyMediumSpriteMaxSprites), rngm.Config(rngm.KeyDefaultChance))
+	paintSprite(sprites.Medium, rngm.Cfg.MediumSpriteMaxLayers, rngm.Cfg.MediumSpriteMaxSprites, rngm.Cfg.DefaultChance)
 
 	// Paint big stars
-	paintSprite(sprites.Large, rngm.Config(rngm.KeyLargeSpriteMaxLayers), rngm.Config(rngm.KeyLargeSpriteMaxSprites), rngm.Config(rngm.KeyDefaultChance))
+	paintSprite(sprites.Large, rngm.Cfg.LargeSpriteMaxLayers, rngm.Cfg.LargeSpriteMaxSprites, rngm.Cfg.DefaultChance)
 
 	// Paint special sprites
-	paintSprite(sprites.Special, rngm.Config(rngm.KeySpecialSpriteMaxLayers), rngm.Config(rngm.KeySpecialSpriteMaxSprites), rngm.Config(rngm.KeySpecialChance))
+	paintSprite(sprites.Special, rngm.Cfg.SpecialSpriteMaxLayers, rngm.Cfg.SpecialSpriteMaxSprites, rngm.Cfg.SpecialChance)
 
 	// Save image
 	writer, err := os.Create(param.OutputDir + "/" + param.PngName)

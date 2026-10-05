@@ -1,0 +1,30 @@
+# 8-Bit Hubble – RNG configuration file
+#
+# Keys not present in this file keep their built-in default values.
+#
+# Usage:
+#   8bHubbleGolang -c config_example.toml [other flags]
+
+# ---------------------------------------------------------------------------
+# Max number of layers per sprite size.
+# Each layer adds a pass of sprites painted on top of the previous ones.
+# ---------------------------------------------------------------------------
+# SmallSpriteMaxLayers   = 10
+# MediumSpriteMaxLayers  = 5
+# LargeSpriteMaxLayers   = 2
+# SpecialSpriteMaxLayers = 3
+
+# ---------------------------------------------------------------------------
+# Max number of sprites (of the same size) painted per layer.
+# ---------------------------------------------------------------------------
+# SmallSpriteMaxSprites   = 50
+# MediumSpriteMaxSprites  = 25
+# LargeSpriteMaxSprites   = 10
+# SpecialSpriteMaxSprites = 1
+
+# ---------------------------------------------------------------------------
+# Probability (0-100) that a sprite category is painted at all.
+# 100 = always painted, 0 = never painted.
+# ---------------------------------------------------------------------------
+# DefaultChance = 100
+# SpecialChance = 50

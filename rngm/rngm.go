@@ -7,61 +7,96 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-const (
-	KeySmallSpriteMaxLayers   = "SmallSpriteMaxLayers"
-	KeyMediumSpriteMaxLayers  = "MediumSpriteMaxLayers"
-	KeyLargeSpriteMaxLayers   = "LargeSpriteMaxLayers"
-	KeySpecialSpriteMaxLayers = "SpecialSpriteMaxLayers"
+type rngConfig struct {
+	// Max number of layers per sprite size
+	SmallSpriteMaxLayers   int
+	MediumSpriteMaxLayers  int
+	LargeSpriteMaxLayers   int
+	SpecialSpriteMaxLayers int
 
-	KeySmallSpriteMaxSprites   = "SmallSpriteMaxSprites"
-	KeyMediumSpriteMaxSprites  = "MediumSpriteMaxSprites"
-	KeyLargeSpriteMaxSprites   = "LargeSpriteMaxSprites"
-	KeySpecialSpriteMaxSprites = "SpecialSpriteMaxSprites"
+	// Max number of sprites (of same size) per layer
+	SmallSpriteMaxSprites   int
+	MediumSpriteMaxSprites  int
+	LargeSpriteMaxSprites   int
+	SpecialSpriteMaxSprites int
 
-	KeyDefaultChance = "DefaultChance"
-	KeySpecialChance = "SpecialChance"
-)
-
-// rngConfig holds the active configuration values.
-// It is initialised with the default values and can be overridden via LoadConfig.
-var rngConfig = map[string]int{
-	KeySmallSpriteMaxLayers:   10,
-	KeyMediumSpriteMaxLayers:  5,
-	KeyLargeSpriteMaxLayers:   2,
-	KeySpecialSpriteMaxLayers: 3,
-
-	KeySmallSpriteMaxSprites:   50,
-	KeyMediumSpriteMaxSprites:  25,
-	KeyLargeSpriteMaxSprites:   10,
-	KeySpecialSpriteMaxSprites: 1,
-
-	KeyDefaultChance: 100,
-	KeySpecialChance: 50,
+	// Chances (probability 0-100) of a sprite category being painted at all
+	DefaultChance int
+	SpecialChance int
 }
 
-// Config returns the value for the given key from rngConfig.
-func Config(key string) int {
-	return rngConfig[key]
+var Cfg = rngConfig{
+	SmallSpriteMaxLayers:   10,
+	MediumSpriteMaxLayers:  5,
+	LargeSpriteMaxLayers:   2,
+	SpecialSpriteMaxLayers: 3,
+
+	SmallSpriteMaxSprites:   50,
+	MediumSpriteMaxSprites:  25,
+	LargeSpriteMaxSprites:   10,
+	SpecialSpriteMaxSprites: 1,
+
+	DefaultChance: 100,
+	SpecialChance: 50,
 }
 
-// LoadConfig reads a TOML config file and overrides the default rngConfig values.
-// Keys present in the file replace their default counterparts; missing keys keep
-// their defaults.
+type tomlOverrides struct {
+	SmallSpriteMaxLayers   *int
+	MediumSpriteMaxLayers  *int
+	LargeSpriteMaxLayers   *int
+	SpecialSpriteMaxLayers *int
+
+	SmallSpriteMaxSprites   *int
+	MediumSpriteMaxSprites  *int
+	LargeSpriteMaxSprites   *int
+	SpecialSpriteMaxSprites *int
+
+	DefaultChance *int
+	SpecialChance *int
+}
+
 func LoadConfig(path string) error {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
 
-	var overrides map[string]int
-	if _, err := toml.Decode(string(data), &overrides); err != nil {
+	var o tomlOverrides
+	if _, err := toml.Decode(string(data), &o); err != nil {
 		return err
 	}
 
-	for k, v := range overrides {
-		if _, known := rngConfig[k]; known {
-			rngConfig[k] = v
-		}
+	if o.SmallSpriteMaxLayers != nil {
+		Cfg.SmallSpriteMaxLayers = *o.SmallSpriteMaxLayers
+	}
+	if o.MediumSpriteMaxLayers != nil {
+		Cfg.MediumSpriteMaxLayers = *o.MediumSpriteMaxLayers
+	}
+	if o.LargeSpriteMaxLayers != nil {
+		Cfg.LargeSpriteMaxLayers = *o.LargeSpriteMaxLayers
+	}
+	if o.SpecialSpriteMaxLayers != nil {
+		Cfg.SpecialSpriteMaxLayers = *o.SpecialSpriteMaxLayers
+	}
+
+	if o.SmallSpriteMaxSprites != nil {
+		Cfg.SmallSpriteMaxSprites = *o.SmallSpriteMaxSprites
+	}
+	if o.MediumSpriteMaxSprites != nil {
+		Cfg.MediumSpriteMaxSprites = *o.MediumSpriteMaxSprites
+	}
+	if o.LargeSpriteMaxSprites != nil {
+		Cfg.LargeSpriteMaxSprites = *o.LargeSpriteMaxSprites
+	}
+	if o.SpecialSpriteMaxSprites != nil {
+		Cfg.SpecialSpriteMaxSprites = *o.SpecialSpriteMaxSprites
+	}
+
+	if o.DefaultChance != nil {
+		Cfg.DefaultChance = *o.DefaultChance
+	}
+	if o.SpecialChance != nil {
+		Cfg.SpecialChance = *o.SpecialChance
 	}
 
 	return nil
