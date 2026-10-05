@@ -27,8 +27,6 @@ const (
 	Special
 )
 
-// AllSprites returns every sprite across all size categories as a flat slice.
-// Order is stable (defined by declaration order), so callers can iterate safely.
 func AllSprites() []Sprite {
 	all := make([]Sprite, 0, len(smallSprites)+len(mediumSprites)+len(bigSprites)+len(specialSprites))
 	all = append(all, smallSprites...)
@@ -38,7 +36,7 @@ func AllSprites() []Sprite {
 	return all
 }
 
-// GetSprite picks a random sprite of the requested size and returns it decoded.
+
 func GetSprite(spriteSize Size) (img image.Image) {
 	var pool []Sprite
 
@@ -53,7 +51,6 @@ func GetSprite(spriteSize Size) (img image.Image) {
 		pool = specialSprites
 	}
 
-	// Slices have a guaranteed order, so a random index is fully deterministic.
 	img = base64ToPng(pool[rngm.Intn(len(pool))].B64Value)
 
 	if spriteSize == Special {

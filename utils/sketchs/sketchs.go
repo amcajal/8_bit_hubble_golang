@@ -51,7 +51,6 @@ func parseNameFlag(args []string) string {
 	return ""
 }
 
-// getAllSprites decodes every sprite and returns a slice of (name, image) pairs.
 func getAllSprites() []struct {
 	name string
 	img  image.Image
@@ -70,7 +69,6 @@ func getAllSprites() []struct {
 	return result
 }
 
-// findSpriteByName searches AllSprites() for a sprite with the given name.
 func findSpriteByName(name string) (image.Image, bool) {
 	for _, s := range sprites.AllSprites() {
 		if s.Name == name {
