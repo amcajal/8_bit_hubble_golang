@@ -1,6 +1,8 @@
 package rngm
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 // Max number of layers per sprite size
 const SmallSpriteMaxLayers int = 10
@@ -15,17 +17,18 @@ const LargeSpriteMaxSprites int = 10
 const SpecialSpriteMaxSprites int = 1
 
 // Chances (or probability) of a sprite category being painted at all
-const DefChance int = 100
+const DefaultChance int = 100
 const SpecialChance int = 50
 
 var r *rand.Rand
 
-// Init seeds the shared random source. Call once at program startup.
 func Init(seed int64) {
 	r = rand.New(rand.NewSource(seed))
+
+	// TODO create map with the contstants above, keeping the names and values
+	// name of the map rngConfig
 }
 
-// Intn returns a non-negative random int in [0, n).
 func Intn(n int) int {
 	return r.Intn(n)
 }

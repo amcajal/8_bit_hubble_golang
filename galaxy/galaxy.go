@@ -8,8 +8,6 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/amcajal/8_bit_hubble_golang/rngm"
-
 	"github.com/amcajal/8_bit_hubble_golang/palette"
 	"github.com/amcajal/8_bit_hubble_golang/param"
 	"github.com/amcajal/8_bit_hubble_golang/rngm"
@@ -32,13 +30,13 @@ func GenerateGalaxy() error {
 	paintBackground()
 
 	// Paint small stars
-	paintSprite(sprites.Small, rngm.SmallSpriteMaxLayers, rngm.SmallSpriteMaxSprites, rngm.DefChance)
+	paintSprite(sprites.Small, rngm.SmallSpriteMaxLayers, rngm.SmallSpriteMaxSprites, rngm.DefaultChance)
 
 	// Paint medium stars
-	paintSprite(sprites.Medium, rngm.MediumSpriteMaxLayers, rngm.MediumSpriteMaxSprites, rngm.DefChance)
+	paintSprite(sprites.Medium, rngm.MediumSpriteMaxLayers, rngm.MediumSpriteMaxSprites, rngm.DefaultChance)
 
 	// Paint big stars
-	paintSprite(sprites.Large, rngm.LargeSpriteMaxLayers, rngm.LargeSpriteMaxSprites, rngm.DefChance)
+	paintSprite(sprites.Large, rngm.LargeSpriteMaxLayers, rngm.LargeSpriteMaxSprites, rngm.DefaultChance)
 
 	// Paint special sprites
 	paintSprite(sprites.Special, rngm.SpecialSpriteMaxLayers, rngm.SpecialSpriteMaxSprites, rngm.SpecialChance)
@@ -66,7 +64,7 @@ func paintBackground() {
 // 0 to maxLayers, each one with 0 to maxSprites of spriteSize type.
 func paintSprite(spriteSize sprites.Size, maxLayers int, maxSprites int, chance int) {
 
-	if p := rngm.Intn(100); p > chance {
+	if !sprites.ShouldPaintSprite(spriteSize) {
 		return
 	}
 
