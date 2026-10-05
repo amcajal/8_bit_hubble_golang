@@ -32,9 +32,9 @@ func ShouldPaintSprite(spriteSize Size) bool {
 
 	switch spriteSize {
 	case Special:
-		chance = rngm.SpecialChance
+		chance = rngm.Config(rngm.KeySpecialChance)
 	default:
-		chance = rngm.DefaultChance
+		chance = rngm.Config(rngm.KeyDefaultChance)
 	}
 	return rngm.Intn(100) <= chance
 }

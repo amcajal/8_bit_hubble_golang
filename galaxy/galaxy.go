@@ -30,16 +30,16 @@ func GenerateGalaxy() error {
 	paintBackground()
 
 	// Paint small stars
-	paintSprite(sprites.Small, rngm.SmallSpriteMaxLayers, rngm.SmallSpriteMaxSprites, rngm.DefaultChance)
+	paintSprite(sprites.Small, rngm.Config(rngm.KeySmallSpriteMaxLayers), rngm.Config(rngm.KeySmallSpriteMaxSprites), rngm.Config(rngm.KeyDefaultChance))
 
 	// Paint medium stars
-	paintSprite(sprites.Medium, rngm.MediumSpriteMaxLayers, rngm.MediumSpriteMaxSprites, rngm.DefaultChance)
+	paintSprite(sprites.Medium, rngm.Config(rngm.KeyMediumSpriteMaxLayers), rngm.Config(rngm.KeyMediumSpriteMaxSprites), rngm.Config(rngm.KeyDefaultChance))
 
 	// Paint big stars
-	paintSprite(sprites.Large, rngm.LargeSpriteMaxLayers, rngm.LargeSpriteMaxSprites, rngm.DefaultChance)
+	paintSprite(sprites.Large, rngm.Config(rngm.KeyLargeSpriteMaxLayers), rngm.Config(rngm.KeyLargeSpriteMaxSprites), rngm.Config(rngm.KeyDefaultChance))
 
 	// Paint special sprites
-	paintSprite(sprites.Special, rngm.SpecialSpriteMaxLayers, rngm.SpecialSpriteMaxSprites, rngm.SpecialChance)
+	paintSprite(sprites.Special, rngm.Config(rngm.KeySpecialSpriteMaxLayers), rngm.Config(rngm.KeySpecialSpriteMaxSprites), rngm.Config(rngm.KeySpecialChance))
 
 	// Save image
 	writer, err := os.Create(param.OutputDir + "/" + param.PngName)
