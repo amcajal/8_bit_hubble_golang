@@ -20,13 +20,13 @@ func GetNoOfLayers(spriteSize Size) int {
 		forcedValue = rngm.Cfg.NoOfSmallSpriteLayers
 		defaultLimit = rngm.Cfg.SmallSpriteMaxLayers
 	case Medium:
-		forcedValue = rngm.Cfg.NoOfSmallSpriteLayers
+		forcedValue = rngm.Cfg.NoOfMediumSpriteLayers
 		defaultLimit = rngm.Cfg.MediumSpriteMaxLayers
 	case Large:
-		forcedValue = rngm.Cfg.LargeSpriteMaxLayers
+		forcedValue = rngm.Cfg.NoOfLargeSpriteLayers
 		defaultLimit = rngm.Cfg.LargeSpriteMaxLayers
 	default: // Special
-		forcedValue = rngm.Cfg.SpecialSpriteMaxLayers
+		forcedValue = rngm.Cfg.NoOfSpecialSpriteLayers
 		defaultLimit = rngm.Cfg.SpecialSpriteMaxLayers
 	}
 
