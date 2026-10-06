@@ -23,6 +23,24 @@
 # SpecialSpriteMaxSprites = 1
 
 # ---------------------------------------------------------------------------
+# Forced number of layers per sprite size.
+# When set, this many layers are painted.
+# ---------------------------------------------------------------------------
+# NoOfSmallSpriteLayers   = 3
+# NoOfMediumSpriteLayers  = 2
+# NoOfLargeSpriteLayers   = 1
+# NoOfSpecialSpriteLayers = 1
+
+# ---------------------------------------------------------------------------
+# Forced number of elements (sprites) per layer per sprite size.
+# When set, this many sprites are painted per layer.
+# ---------------------------------------------------------------------------
+# NoOfSmallSpriteElements   = 10
+# NoOfMediumSpriteElements  = 5
+# NoOfLargeSpriteElements   = 2
+# NoOfSpecialSpriteElements = 1
+
+# ---------------------------------------------------------------------------
 # Probability (0-100) that a sprite category is painted at all.
 # 100 = always painted, 0 = never painted.
 # ---------------------------------------------------------------------------

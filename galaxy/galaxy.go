@@ -30,16 +30,16 @@ func GenerateGalaxy() error {
 	paintBackground()
 
 	// Paint small stars
-	paintSprite(sprites.Small, rngm.Cfg.SmallSpriteMaxSprites)
+	paintSprite(sprites.Small)
 
 	// Paint medium stars
-	paintSprite(sprites.Medium, rngm.Cfg.MediumSpriteMaxSprites)
+	paintSprite(sprites.Medium)
 
 	// Paint big stars
-	paintSprite(sprites.Large, rngm.Cfg.LargeSpriteMaxSprites)
+	paintSprite(sprites.Large)
 
 	// Paint special sprites
-	paintSprite(sprites.Special, rngm.Cfg.SpecialSpriteMaxSprites)
+	paintSprite(sprites.Special)
 
 	// Save image
 	writer, err := os.Create(param.OutputDir + "/" + param.PngName)
@@ -62,7 +62,7 @@ func paintBackground() {
 
 // There is a chance% probability of painting sprites. If success, paint
 // 0 to maxLayers, each one with 0 to maxSprites of spriteSize type.
-func paintSprite(spriteSize sprites.Size, maxSprites int) {
+func paintSprite(spriteSize sprites.Size) {
 
 	if !sprites.ShouldPaintSprite(spriteSize) {
 		return
@@ -74,7 +74,7 @@ func paintSprite(spriteSize sprites.Size, maxSprites int) {
 	for l := 1; l <= layers; l++ {
 
 		// Number of sprites to be painted
-		elements := rngm.Intn(maxSprites + 1)
+		elements := sprites.GetNoOfElements(spriteSize)
 
 		// Decide sprite to be painted
 		sprite := sprites.GetSprite(spriteSize)

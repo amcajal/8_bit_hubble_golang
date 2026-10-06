@@ -24,11 +24,17 @@ type rngConfig struct {
 	DefaultChance int
 	SpecialChance int
 
-	// Forced (user-set) values
+	// Forced (user-set) number of layers per sprite size (-1 = not set, use random)
 	NoOfSmallSpriteLayers   int
 	NoOfMediumSpriteLayers  int
 	NoOfLargeSpriteLayers   int
 	NoOfSpecialSpriteLayers int
+
+	// Forced (user-set) number of elements per layer per sprite size (-1 = not set, use random)
+	NoOfSmallSpriteElements   int
+	NoOfMediumSpriteElements  int
+	NoOfLargeSpriteElements   int
+	NoOfSpecialSpriteElements int
 }
 
 var Cfg = rngConfig{
@@ -50,6 +56,11 @@ var Cfg = rngConfig{
 	NoOfMediumSpriteLayers:  -1,
 	NoOfLargeSpriteLayers:   -1,
 	NoOfSpecialSpriteLayers: -1,
+
+	NoOfSmallSpriteElements:   -1,
+	NoOfMediumSpriteElements:  -1,
+	NoOfLargeSpriteElements:   -1,
+	NoOfSpecialSpriteElements: -1,
 }
 
 type tomlOverrides struct {
@@ -70,6 +81,11 @@ type tomlOverrides struct {
 	NoOfMediumSpriteLayers  *int
 	NoOfLargeSpriteLayers   *int
 	NoOfSpecialSpriteLayers *int
+
+	NoOfSmallSpriteElements   *int
+	NoOfMediumSpriteElements  *int
+	NoOfLargeSpriteElements   *int
+	NoOfSpecialSpriteElements *int
 }
 
 func LoadConfig(path string) error {
@@ -127,6 +143,19 @@ func LoadConfig(path string) error {
 	}
 	if o.NoOfSpecialSpriteLayers != nil {
 		Cfg.NoOfSpecialSpriteLayers = *o.NoOfSpecialSpriteLayers
+	}
+
+	if o.NoOfSmallSpriteElements != nil {
+		Cfg.NoOfSmallSpriteElements = *o.NoOfSmallSpriteElements
+	}
+	if o.NoOfMediumSpriteElements != nil {
+		Cfg.NoOfMediumSpriteElements = *o.NoOfMediumSpriteElements
+	}
+	if o.NoOfLargeSpriteElements != nil {
+		Cfg.NoOfLargeSpriteElements = *o.NoOfLargeSpriteElements
+	}
+	if o.NoOfSpecialSpriteElements != nil {
+		Cfg.NoOfSpecialSpriteElements = *o.NoOfSpecialSpriteElements
 	}
 
 	return nil

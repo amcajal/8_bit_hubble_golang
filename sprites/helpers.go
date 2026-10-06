@@ -37,6 +37,33 @@ func GetNoOfLayers(spriteSize Size) int {
 	}
 }
 
+func GetNoOfElements(spriteSize Size) int {
+
+	forcedValue := 0
+	defaultLimit := 0
+
+	switch spriteSize {
+	case Small:
+		forcedValue = rngm.Cfg.NoOfSmallSpriteElements
+		defaultLimit = rngm.Cfg.SmallSpriteMaxSprites
+	case Medium:
+		forcedValue = rngm.Cfg.NoOfMediumSpriteElements
+		defaultLimit = rngm.Cfg.MediumSpriteMaxSprites
+	case Large:
+		forcedValue = rngm.Cfg.NoOfLargeSpriteElements
+		defaultLimit = rngm.Cfg.LargeSpriteMaxSprites
+	default: // Special
+		forcedValue = rngm.Cfg.NoOfSpecialSpriteElements
+		defaultLimit = rngm.Cfg.SpecialSpriteMaxSprites
+	}
+
+	if forcedValue != -1 {
+		return forcedValue
+	} else {
+		return rngm.Intn(defaultLimit + 1)
+	}
+}
+
 func ShouldPaintSprite(spriteSize Size) bool {
 	chance := 0
 
