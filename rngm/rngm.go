@@ -24,13 +24,13 @@ type rngConfig struct {
 	DefaultChance int
 	SpecialChance int
 
-	// Forced (user-set) number of layers per sprite size (-1 = not set, use random)
+	// Forced (user-set) number of layers per sprite size
 	NoOfSmallSpriteLayers   int
 	NoOfMediumSpriteLayers  int
 	NoOfLargeSpriteLayers   int
 	NoOfSpecialSpriteLayers int
 
-	// Forced (user-set) number of elements per layer per sprite size (-1 = not set, use random)
+	// Forced (user-set) number of elements per layer per sprite size
 	NoOfSmallSpriteElements   int
 	NoOfMediumSpriteElements  int
 	NoOfLargeSpriteElements   int
