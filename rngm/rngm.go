@@ -23,6 +23,12 @@ type rngConfig struct {
 	// Chances (probability 0-100) of a sprite category being painted at all
 	DefaultChance int
 	SpecialChance int
+
+	// Forced (user-set) values
+	NoOfSmallSpriteLayers   int
+	NoOfMediumSpriteLayers  int
+	NoOfLargeSpriteLayers   int
+	NoOfSpecialSpriteLayers int
 }
 
 var Cfg = rngConfig{
@@ -38,6 +44,12 @@ var Cfg = rngConfig{
 
 	DefaultChance: 100,
 	SpecialChance: 50,
+
+	// Value -1 is used to indicate that the user has not set a value for this parameter
+	NoOfSmallSpriteLayers:   -1,
+	NoOfMediumSpriteLayers:  -1,
+	NoOfLargeSpriteLayers:   -1,
+	NoOfSpecialSpriteLayers: -1,
 }
 
 type tomlOverrides struct {
@@ -53,6 +65,11 @@ type tomlOverrides struct {
 
 	DefaultChance *int
 	SpecialChance *int
+
+	NoOfSmallSpriteLayers   *int
+	NoOfMediumSpriteLayers  *int
+	NoOfLargeSpriteLayers   *int
+	NoOfSpecialSpriteLayers *int
 }
 
 func LoadConfig(path string) error {
@@ -97,6 +114,19 @@ func LoadConfig(path string) error {
 	}
 	if o.SpecialChance != nil {
 		Cfg.SpecialChance = *o.SpecialChance
+	}
+
+	if o.NoOfSmallSpriteLayers != nil {
+		Cfg.NoOfSmallSpriteLayers = *o.NoOfSmallSpriteLayers
+	}
+	if o.NoOfMediumSpriteLayers != nil {
+		Cfg.NoOfMediumSpriteLayers = *o.NoOfMediumSpriteLayers
+	}
+	if o.NoOfLargeSpriteLayers != nil {
+		Cfg.NoOfLargeSpriteLayers = *o.NoOfLargeSpriteLayers
+	}
+	if o.NoOfSpecialSpriteLayers != nil {
+		Cfg.NoOfSpecialSpriteLayers = *o.NoOfSpecialSpriteLayers
 	}
 
 	return nil
