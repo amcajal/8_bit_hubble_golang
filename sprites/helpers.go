@@ -10,6 +10,14 @@ import (
 	"github.com/amcajal/pixelart/scale"
 )
 
+// Name in honor of Bob Ross
+func makeBigDecision(forced, limit int) int {
+	if forced != -1 {
+		return forced
+	}
+	return rngm.Intn(limit + 1)
+}
+
 func GetNoOfLayers(spriteSize Size) int {
 
 	forcedValue := 0
@@ -30,11 +38,7 @@ func GetNoOfLayers(spriteSize Size) int {
 		defaultLimit = rngm.Cfg.SpecialSpriteMaxLayers
 	}
 
-	if forcedValue != -1 {
-		return forcedValue
-	} else {
-		return rngm.Intn(defaultLimit + 1)
-	}
+	return makeBigDecision(forcedValue, defaultLimit)
 }
 
 func GetNoOfElements(spriteSize Size) int {
@@ -57,11 +61,7 @@ func GetNoOfElements(spriteSize Size) int {
 		defaultLimit = rngm.Cfg.SpecialSpriteMaxSprites
 	}
 
-	if forcedValue != -1 {
-		return forcedValue
-	} else {
-		return rngm.Intn(defaultLimit + 1)
-	}
+	return makeBigDecision(forcedValue, defaultLimit)
 }
 
 func ShouldPaintSprite(spriteSize Size) bool {
