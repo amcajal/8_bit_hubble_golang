@@ -1,10 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"github.com/amcajal/8_bit_hubble_golang/galaxy"
 	"github.com/amcajal/8_bit_hubble_golang/param"
 	"github.com/amcajal/8_bit_hubble_golang/rngm"
-	"log"
 )
 
 func main() {

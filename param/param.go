@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/amcajal/8_bit_hubble_golang/rngm"
 )
 
 const pngExt string = ".png"
@@ -14,12 +16,14 @@ const pngExt string = ".png"
 var OutputDir string
 var PngName string
 var Seed int64
+var ConfigFile string
 
 func CheckParams() error {
 
 	flag.StringVar(&OutputDir, "o", "./", "Output directory to save the png")
 	flag.StringVar(&PngName, "n", "8bh_galaxy.png", "Name of the png image")
 	flag.Int64Var(&Seed, "s", time.Now().Unix(), "Seed to be used in the image generation")
+	flag.StringVar(&ConfigFile, "c", "", "Path to a TOML config file for RNG parameters")
 
 	flag.Parse()
 
@@ -27,7 +31,21 @@ func CheckParams() error {
 		return paramError
 	}
 
+	if paramError := checkConfigFile(); paramError != nil {
+		return paramError
+	}
+
 	appendExtension()
+
+	return nil
+}
+
+func checkConfigFile() error {
+	if ConfigFile != "" {
+		if err := rngm.LoadConfig(ConfigFile); err != nil {
+			return errors.New("Failed to load config file " + ConfigFile + ": " + err.Error())
+		}
+	}
 
 	return nil
 }
