@@ -4,4 +4,12 @@ go 1.26.5
 
 require github.com/amcajal/pixelart v1.0.0
 
-require github.com/BurntSushi/toml v1.6.0
+require (
+	github.com/BurntSushi/toml v1.6.0
+	github.com/anthonynsimon/bild v0.17.1
+)
+
+require (
+	github.com/HugoSmits86/nativewebp v1.3.0 // indirect
+	golang.org/x/image v0.45.0 // indirect
+)
