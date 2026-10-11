@@ -64,6 +64,11 @@ func GetNoOfElements(spriteSize Size) int {
 	return makeBigDecision(forcedValue, defaultLimit)
 }
 
+func ShouldPaintCosmicLatteBackground() bool {
+	chance := rngm.Cfg.CosmicLatteBackgroundChance
+	return rngm.Intn(100) <= chance
+}
+
 func ShouldPaintSprite(spriteSize Size) bool {
 	chance := 0
 
