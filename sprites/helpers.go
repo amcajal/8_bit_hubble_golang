@@ -84,15 +84,6 @@ func ShouldPaintSprite(spriteSize Size) bool {
 	return rngm.Intn(100) <= chance
 }
 
-func AllSprites() []Sprite {
-	all := make([]Sprite, 0, len(smallSprites)+len(mediumSprites)+len(bigSprites)+len(specialSprites))
-	all = append(all, smallSprites...)
-	all = append(all, mediumSprites...)
-	all = append(all, bigSprites...)
-	all = append(all, specialSprites...)
-	return all
-}
-
 func GetSprite(spriteSize Size) (img image.Image) {
 	var pool []Sprite
 
@@ -125,10 +116,6 @@ func rescaleSprite(sprite image.Image) (newSprite image.Image) {
 		}
 	}
 	return
-}
-
-func LoadSprite(s Sprite) image.Image {
-	return loadPNG(s.Filename)
 }
 
 // loadPNG reads a PNG file from the embedded assets FS and decodes it.
