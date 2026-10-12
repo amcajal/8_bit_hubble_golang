@@ -14,8 +14,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/base64"
 	"fmt"
 	"image"
 	"image/png"
@@ -64,7 +62,7 @@ func getAllSprites() []struct {
 		result = append(result, struct {
 			name string
 			img  image.Image
-		}{name: s.Name, img: b64ToImage(s.B64Value)})
+		}{name: s.Name, img: sprites.LoadSprite(s)})
 	}
 	return result
 }
@@ -72,17 +70,10 @@ func getAllSprites() []struct {
 func findSpriteByName(name string) (image.Image, bool) {
 	for _, s := range sprites.AllSprites() {
 		if s.Name == name {
-			return b64ToImage(s.B64Value), true
+			return sprites.LoadSprite(s), true
 		}
 	}
 	return nil, false
-}
-
-// b64ToImage decodes a base64-encoded PNG string into an image.Image.
-func b64ToImage(b64string string) image.Image {
-	data, _ := base64.StdEncoding.DecodeString(b64string)
-	img, _ := png.Decode(bytes.NewReader(data))
-	return img
 }
 
 func exportOneSprite(name string, timestamp int64) {

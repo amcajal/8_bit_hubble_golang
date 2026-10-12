@@ -2,10 +2,10 @@
 // the application (i.e: stars, planets)
 package sprites
 
-// Sprite holds the name and base64-encoded PNG data for a single sprite.
+// Sprite holds the name and the filename of the PNG asset for a single sprite.
 type Sprite struct {
 	Name     string
-	B64Value string
+	Filename string
 }
 
 type Size uint8
