@@ -69,6 +69,11 @@ func ShouldPaintCosmicLatteBackground() bool {
 	return rngm.Intn(100) <= chance
 }
 
+func ShouldPaintNebula() bool {
+	chance := rngm.Cfg.NebulaChance
+	return rngm.Intn(100) <= chance
+}
+
 func ShouldPaintSprite(spriteSize Size) bool {
 	chance := 0
 

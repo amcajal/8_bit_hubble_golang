@@ -34,3 +34,32 @@ func GetCosmicLatteBackground() image.Image {
 	stars_background = blackToTransparent(stars_background)
 	return stars_background
 }
+
+func GenerateColoredPerlinNoise(baseColor *color.RGBA) image.Image {
+	color_to_use := color.RGBA{R: 255, G: 248, B: 231, A: 255} // Cosmic Latte
+	if baseColor != nil {
+		color_to_use = *baseColor
+	}
+	img := image.NewRGBA(image.Rect(0, 0, 500, 500))
+	draw.Draw(img, img.Bounds(), &image.Uniform{
+		C: color_to_use,
+	}, image.Point{}, draw.Src)
+	perlin := noise.GeneratePerlin(500, 500, 0.15)
+	return blend.Multiply(perlin, img)
+}
+
+func GenerateNebula() image.Image {
+	nebula := GenerateColoredPerlinNoise(nil)
+
+	for i := 0; i < rngm.Intn(3)+1; i++ {
+		aux_color := color.RGBA{
+			R: uint8(rngm.Intn(256)),
+			G: uint8(rngm.Intn(256)),
+			B: uint8(rngm.Intn(256)),
+			A: 255,
+		}
+		aux_nebula := GenerateColoredPerlinNoise(&aux_color)
+		nebula = blend.Overlay(nebula, aux_nebula)
+	}
+	return nebula
+}
