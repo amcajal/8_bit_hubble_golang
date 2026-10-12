@@ -1,8 +1,6 @@
 package sprites
 
 import (
-	"bytes"
-	"encoding/base64"
 	"image"
 	"image/png"
 
@@ -86,15 +84,6 @@ func ShouldPaintSprite(spriteSize Size) bool {
 	return rngm.Intn(100) <= chance
 }
 
-func AllSprites() []Sprite {
-	all := make([]Sprite, 0, len(smallSprites)+len(mediumSprites)+len(bigSprites)+len(specialSprites))
-	all = append(all, smallSprites...)
-	all = append(all, mediumSprites...)
-	all = append(all, bigSprites...)
-	all = append(all, specialSprites...)
-	return all
-}
-
 func GetSprite(spriteSize Size) (img image.Image) {
 	var pool []Sprite
 
@@ -109,7 +98,7 @@ func GetSprite(spriteSize Size) (img image.Image) {
 		pool = specialSprites
 	}
 
-	img = base64ToPng(pool[rngm.Intn(len(pool))].B64Value)
+	img = loadPNG(pool[rngm.Intn(len(pool))].Filename)
 
 	if spriteSize == Special {
 		img = rescaleSprite(img)
@@ -129,16 +118,17 @@ func rescaleSprite(sprite image.Image) (newSprite image.Image) {
 	return
 }
 
-func base64ToPng(b64string string) image.Image {
+// loadPNG reads a PNG file from the embedded assets FS and decodes it.
+func loadPNG(filename string) image.Image {
+	f, err := assetsFS.Open(filename)
+	if err != nil {
+		panic("sprites: cannot open embedded asset " + filename + ": " + err.Error())
+	}
+	defer f.Close()
 
-	// Turn the string back into the original byte array
-	originalData, _ := base64.StdEncoding.DecodeString(b64string)
-
-	// Instead of a file descriptor to a file, get a "file descriptor" to the byte slice
-	reader := bytes.NewReader(originalData)
-
-	// Create the in-memory image structure
-	img, _ := png.Decode(reader)
-
+	img, err := png.Decode(f)
+	if err != nil {
+		panic("sprites: cannot decode PNG " + filename + ": " + err.Error())
+	}
 	return img
 }
