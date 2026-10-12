@@ -44,5 +44,7 @@
 # Probability (0-100) that a sprite category is painted at all.
 # 100 = always painted, 0 = never painted.
 # ---------------------------------------------------------------------------
-# DefaultChance = 100
-# SpecialChance = 50
+# DefaultChance               = 100
+# SpecialChance               = 50
+# CosmicLatteBackgroundChance = 50
+# NebulaChance                = 50

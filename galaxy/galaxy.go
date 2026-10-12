@@ -59,11 +59,14 @@ func paintBackground() {
 	black := color.RGBA{0, 0, 0, 255}
 	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{black}, image.Point{}, draw.Src)
 
+	if sprites.ShouldPaintNebula() {
+		nebula := sprites.GenerateNebula()
+		draw.Draw(canvas, canvas.Bounds(), nebula, image.Point{}, draw.Over)
+	}
+
 	if sprites.ShouldPaintCosmicLatteBackground() {
 		stars_background := sprites.GetCosmicLatteBackground()
 		draw.Draw(canvas, canvas.Bounds(), stars_background, image.Point{}, draw.Over)
-	} else {
-		return
 	}
 }
 

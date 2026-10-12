@@ -24,6 +24,7 @@ type rngConfig struct {
 	DefaultChance               int
 	SpecialChance               int
 	CosmicLatteBackgroundChance int
+	NebulaChance                int
 
 	// Forced (user-set) number of layers per sprite size
 	NoOfSmallSpriteLayers   int
@@ -52,6 +53,7 @@ var Cfg = rngConfig{
 	DefaultChance:               100,
 	SpecialChance:               50,
 	CosmicLatteBackgroundChance: 50,
+	NebulaChance:                25,
 
 	// Value -1 is used to indicate that the user has not set a value for this parameter
 	NoOfSmallSpriteLayers:   -1,
@@ -79,6 +81,7 @@ type tomlOverrides struct {
 	DefaultChance               *int
 	SpecialChance               *int
 	CosmicLatteBackgroundChance *int
+	NebulaChance                *int
 
 	NoOfSmallSpriteLayers   *int
 	NoOfMediumSpriteLayers  *int
@@ -137,6 +140,10 @@ func LoadConfig(path string) error {
 
 	if o.CosmicLatteBackgroundChance != nil {
 		Cfg.CosmicLatteBackgroundChance = *o.CosmicLatteBackgroundChance
+	}
+
+	if o.NebulaChance != nil {
+		Cfg.NebulaChance = *o.NebulaChance
 	}
 
 	if o.NoOfSmallSpriteLayers != nil {
