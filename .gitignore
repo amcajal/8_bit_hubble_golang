@@ -1,3 +1,4 @@
 *.personal
 *.png
+*.webp
 !sprites/assets/*.png

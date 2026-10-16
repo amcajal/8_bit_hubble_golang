@@ -12,21 +12,22 @@ import (
 )
 
 const pngExt string = ".png"
+const webpExt string = ".webp"
 
 type InputParameters struct {
-	OutputDir  string
-	PngName    string
-	Seed       int64
-	ConfigFile string
-	Animated   bool
-	Paletted   bool
+	OutputDir      string
+	OutputFileName string
+	Seed           int64
+	ConfigFile     string
+	Animated       bool
+	Paletted       bool
 }
 
 var InputParams = InputParameters{}
 
 func CheckParams() error {
 	flag.StringVar(&InputParams.OutputDir, "o", "./", "Output directory to save the png")
-	flag.StringVar(&InputParams.PngName, "n", "8bh_galaxy.png", "Name of the png image")
+	flag.StringVar(&InputParams.OutputFileName, "n", "8bh_galaxy", "Name of the output image")
 	flag.Int64Var(&InputParams.Seed, "s", time.Now().Unix(), "Seed to be used in the image generation")
 	flag.StringVar(&InputParams.ConfigFile, "c", "", "Path to a TOML config file for RNG parameters")
 	flag.BoolVar(&InputParams.Animated, "a", false, "Generate a WebP animated file (think about it as a \"modern\" GIF)")
@@ -80,7 +81,13 @@ func checkOutputDir() error {
 }
 
 func appendExtension() {
-	if !strings.HasSuffix(InputParams.PngName, pngExt) {
-		InputParams.PngName = InputParams.PngName + pngExt
+	if InputParams.Animated {
+		if !strings.HasSuffix(InputParams.OutputFileName, webpExt) {
+			InputParams.OutputFileName = InputParams.OutputFileName + webpExt
+		}
+	} else {
+		if !strings.HasSuffix(InputParams.OutputFileName, pngExt) {
+			InputParams.OutputFileName = InputParams.OutputFileName + pngExt
+		}
 	}
 }

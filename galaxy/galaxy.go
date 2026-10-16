@@ -9,61 +9,60 @@ import (
 	"image/png"
 	"os"
 
+	"github.com/HugoSmits86/nativewebp"
+
 	hubble_palette "github.com/amcajal/8_bit_hubble_golang/palette"
 	"github.com/amcajal/8_bit_hubble_golang/param"
 	"github.com/amcajal/8_bit_hubble_golang/rngm"
 	"github.com/amcajal/8_bit_hubble_golang/sprites"
 )
 
-// Output image (the canvas)
-var canvas *image.NRGBA
-
 // Fixed dimensions of the output image
 const dim_x int = 500 // width
 const dim_y int = 500 // height
 
 func GenerateGalaxy() error {
+	var noOfFrames int = 1
+	if param.InputParams.Animated {
+		noOfFrames = 10
+	}
+	images := make([]image.Image, noOfFrames)
 
-	// Set canvas dimensions
-	canvas = image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
+	for i := 0; i < noOfFrames; i++ {
+		frame := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
+		images[i] = frame
+		paintBackground(frame)
+		paintSprite(frame, sprites.Small)
+		paintSprite(frame, sprites.Medium)
+		paintSprite(frame, sprites.Large)
+		paintSprite(frame, sprites.Special)
+	}
 
-	// Paint background
-	paintBackground()
-
-	// Paint small stars
-	paintSprite(sprites.Small)
-
-	// Paint medium stars
-	paintSprite(sprites.Medium)
-
-	// Paint big stars
-	paintSprite(sprites.Large)
-
-	// Paint special sprites
-	paintSprite(sprites.Special)
-
-	// Save image
-	return saveImage()
+	if param.InputParams.Animated {
+		return saveAsWebp(images)
+	} else {
+		return saveAsPng(images[0])
+	}
 }
 
-func paintBackground() {
+func paintBackground(frame *image.NRGBA) {
 	black := color.RGBA{0, 0, 0, 255}
-	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{black}, image.Point{}, draw.Src)
+	draw.Draw(frame, frame.Bounds(), &image.Uniform{black}, image.Point{}, draw.Src)
 
 	if sprites.ShouldPaintNebula() {
 		nebula := sprites.GenerateNebula()
-		draw.Draw(canvas, canvas.Bounds(), nebula, image.Point{}, draw.Over)
+		draw.Draw(frame, frame.Bounds(), nebula, image.Point{}, draw.Over)
 	}
 
 	if sprites.ShouldPaintCosmicLatteBackground() {
 		stars_background := sprites.GetCosmicLatteBackground()
-		draw.Draw(canvas, canvas.Bounds(), stars_background, image.Point{}, draw.Over)
+		draw.Draw(frame, frame.Bounds(), stars_background, image.Point{}, draw.Over)
 	}
 }
 
 // There is a chance% probability of painting sprites. If success, paint
 // 0 to maxLayers, each one with 0 to maxSprites of spriteSize type.
-func paintSprite(spriteSize sprites.Size) {
+func paintSprite(frame *image.NRGBA, spriteSize sprites.Size) {
 
 	if !sprites.ShouldPaintSprite(spriteSize) {
 		return
@@ -95,7 +94,7 @@ func paintSprite(spriteSize sprites.Size) {
 			// Draw the sprite
 			dp := image.Pt(x_c, y_c)
 			r := image.Rectangle{dp, dp.Add(sb.Size())}
-			draw.Draw(canvas, r, sprite, sb.Min, draw.Over)
+			draw.Draw(frame, r, sprite, sb.Min, draw.Over)
 		}
 	}
 }
@@ -140,8 +139,8 @@ func changeColor(sprite *image.Image) {
 	}
 }
 
-func saveImage() error {
-	writer, err := os.Create(param.InputParams.OutputDir + "/" + param.InputParams.PngName)
+func saveAsPng(frame image.Image) error {
+	writer, err := os.Create(param.InputParams.OutputDir + "/" + param.InputParams.OutputFileName)
 
 	if err != nil {
 		return err
@@ -150,18 +149,45 @@ func saveImage() error {
 	defer writer.Close()
 
 	var outputImage image.Image
-	outputImage = canvas
+	outputImage = frame
 
 	if param.InputParams.Paletted {
-		palettedImg := image.NewPaletted(canvas.Bounds(), palette.Plan9)
+		palettedImg := image.NewPaletted(frame.Bounds(), palette.Plan9)
 		draw.FloydSteinberg.Draw(
 			palettedImg,
 			palettedImg.Bounds(),
-			canvas,
-			canvas.Bounds().Min,
+			frame,
+			frame.Bounds().Min,
 		)
 		outputImage = palettedImg
 	}
 
 	return png.Encode(writer, outputImage)
+}
+
+func saveAsWebp(images []image.Image) error {
+	writer, err := os.Create(param.InputParams.OutputDir + "/" + param.InputParams.OutputFileName)
+
+	if err != nil {
+		return err
+	}
+
+	defer writer.Close()
+
+	durations := make([]uint, len(images))
+	disposals := make([]uint, len(images))
+	for i := range images {
+		durations[i] = 100
+		disposals[i] = 0 // 0 = keep frame (no disposal)
+	}
+
+	ani := nativewebp.Animation{
+		Images:          images,
+		Durations:       durations,
+		Disposals:       disposals,
+		LoopCount:       0,
+		BackgroundColor: 0xffffffff,
+	}
+
+	return nativewebp.EncodeAll(writer, &ani, nil)
 }
