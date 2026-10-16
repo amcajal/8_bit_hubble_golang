@@ -4,11 +4,12 @@ package galaxy
 import (
 	"image"
 	"image/color"
+	"image/color/palette"
 	"image/draw"
 	"image/png"
 	"os"
 
-	"github.com/amcajal/8_bit_hubble_golang/palette"
+	hubble_palette "github.com/amcajal/8_bit_hubble_golang/palette"
 	"github.com/amcajal/8_bit_hubble_golang/param"
 	"github.com/amcajal/8_bit_hubble_golang/rngm"
 	"github.com/amcajal/8_bit_hubble_golang/sprites"
@@ -42,17 +43,7 @@ func GenerateGalaxy() error {
 	paintSprite(sprites.Special)
 
 	// Save image
-	writer, err := os.Create(param.OutputDir + "/" + param.PngName)
-	if err != nil {
-		return err
-	}
-	defer writer.Close()
-
-	if err = png.Encode(writer, canvas); err != nil {
-		return err
-	}
-
-	return nil
+	return saveImage()
 }
 
 func paintBackground() {
@@ -115,7 +106,7 @@ func changeColor(sprite *image.Image) {
 	sb := (*sprite).Bounds()
 
 	// Change the hue of the sprite
-	palette.SetHueRotation(rngm.Intn(361)) // 0 degrees to 360 degrees
+	hubble_palette.SetHueRotation(rngm.Intn(361)) // 0 degrees to 360 degrees
 
 	// Colorize pixels of the sprite
 	rows, columns := sb.Max.X, sb.Max.Y
@@ -125,7 +116,7 @@ func changeColor(sprite *image.Image) {
 			r, g, b, a := sprite_color.RGBA()
 			if a != 0 {
 
-				nr, ng, nb := palette.ChangeHue(r, g, b)
+				nr, ng, nb := hubble_palette.ChangeHue(r, g, b)
 
 				var new_rgb color.RGBA = color.RGBA{
 					uint8(nr & 0xFF),
@@ -147,4 +138,30 @@ func changeColor(sprite *image.Image) {
 			}
 		}
 	}
+}
+
+func saveImage() error {
+	writer, err := os.Create(param.InputParams.OutputDir + "/" + param.InputParams.PngName)
+
+	if err != nil {
+		return err
+	}
+
+	defer writer.Close()
+
+	var outputImage image.Image
+	outputImage = canvas
+
+	if param.InputParams.Paletted {
+		palettedImg := image.NewPaletted(canvas.Bounds(), palette.Plan9)
+		draw.FloydSteinberg.Draw(
+			palettedImg,
+			palettedImg.Bounds(),
+			canvas,
+			canvas.Bounds().Min,
+		)
+		outputImage = palettedImg
+	}
+
+	return png.Encode(writer, outputImage)
 }

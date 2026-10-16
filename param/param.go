@@ -13,17 +13,24 @@ import (
 
 const pngExt string = ".png"
 
-var OutputDir string
-var PngName string
-var Seed int64
-var ConfigFile string
+type InputParameters struct {
+	OutputDir  string
+	PngName    string
+	Seed       int64
+	ConfigFile string
+	Animated   bool
+	Paletted   bool
+}
+
+var InputParams = InputParameters{}
 
 func CheckParams() error {
-
-	flag.StringVar(&OutputDir, "o", "./", "Output directory to save the png")
-	flag.StringVar(&PngName, "n", "8bh_galaxy.png", "Name of the png image")
-	flag.Int64Var(&Seed, "s", time.Now().Unix(), "Seed to be used in the image generation")
-	flag.StringVar(&ConfigFile, "c", "", "Path to a TOML config file for RNG parameters")
+	flag.StringVar(&InputParams.OutputDir, "o", "./", "Output directory to save the png")
+	flag.StringVar(&InputParams.PngName, "n", "8bh_galaxy.png", "Name of the png image")
+	flag.Int64Var(&InputParams.Seed, "s", time.Now().Unix(), "Seed to be used in the image generation")
+	flag.StringVar(&InputParams.ConfigFile, "c", "", "Path to a TOML config file for RNG parameters")
+	flag.BoolVar(&InputParams.Animated, "a", false, "Generate a WebP animated file (think about it as a \"modern\" GIF)")
+	flag.BoolVar(&InputParams.Paletted, "p", false, "Force the output image to show only 256 colors from Plan9 palette")
 
 	flag.Parse()
 
@@ -41,9 +48,9 @@ func CheckParams() error {
 }
 
 func checkConfigFile() error {
-	if ConfigFile != "" {
-		if err := rngm.LoadConfig(ConfigFile); err != nil {
-			return errors.New("Failed to load config file " + ConfigFile + ": " + err.Error())
+	if InputParams.ConfigFile != "" {
+		if err := rngm.LoadConfig(InputParams.ConfigFile); err != nil {
+			return errors.New("Failed to load config file " + InputParams.ConfigFile + ": " + err.Error())
 		}
 	}
 
@@ -53,27 +60,27 @@ func checkConfigFile() error {
 // Output directory must exist and have write perms
 func checkOutputDir() error {
 
-	status, err := os.Stat(OutputDir)
+	status, err := os.Stat(InputParams.OutputDir)
 	if err != nil {
 		return err
 	}
 
 	if !status.IsDir() {
-		return errors.New("Provided output dir (" + OutputDir + ") is NOT a directory")
+		return errors.New("Provided output dir (" + InputParams.OutputDir + ") is NOT a directory")
 	}
 
 	// @TODO this only works if the user launching the app is the owner of the target directory
 	// Probably there is a better way to do this:
 	// Isolate owner's read and write bits, and check both are high
 	if rw := ((status.Mode()) >> 0x07) & 0x03; rw != 0x03 {
-		return errors.New("Provided output dir (" + OutputDir + ") DOES NOT HAVE read and write perms")
+		return errors.New("Provided output dir (" + InputParams.OutputDir + ") DOES NOT HAVE read and write perms")
 	}
 
 	return nil
 }
 
 func appendExtension() {
-	if !strings.HasSuffix(PngName, pngExt) {
-		PngName = PngName + pngExt
+	if !strings.HasSuffix(InputParams.PngName, pngExt) {
+		InputParams.PngName = InputParams.PngName + pngExt
 	}
 }
