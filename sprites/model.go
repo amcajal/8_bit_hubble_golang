@@ -2,10 +2,15 @@
 // the application (i.e: stars, planets)
 package sprites
 
+// Alpha values (0-255) representing opacity levels: 100%, 75%, 50%, 25%, 0%, 25%, 50%, 75%
+var OpacityValues = []uint8{255, 191, 128, 64, 0, 64, 128, 191}
+
 // Sprite holds the name and the filename of the PNG asset for a single sprite.
 type Sprite struct {
-	Name     string
-	Filename string
+	Name          string
+	Filename      string
+	OpacityIndex  int
+	CanBeAnimated bool
 }
 
 type Size uint8

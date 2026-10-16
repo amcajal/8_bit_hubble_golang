@@ -16,7 +16,7 @@ func main() {
 	}
 
 	// Initialize seeded random source (enables deterministic output via -s flag)
-	rngm.Init(param.InputParams.Seed)
+	rngm.LoadSeed(param.InputParams.Seed)
 
 	// Generate galaxy
 	if err := galaxy.GenerateGalaxy(); err != nil {
