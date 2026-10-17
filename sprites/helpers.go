@@ -5,10 +5,10 @@ import (
 	"image/color"
 	"image/png"
 
+	hubble_palette "github.com/amcajal/8_bit_hubble_golang/palette"
 	"github.com/amcajal/8_bit_hubble_golang/param"
 	"github.com/amcajal/8_bit_hubble_golang/rngm"
 	"github.com/amcajal/pixelart/scale"
-	"github.com/anthonynsimon/bild/adjust"
 )
 
 // Name in honor of Bob Ross
@@ -86,8 +86,7 @@ func ShouldPaintSprite(spriteSize Size) bool {
 	}
 	return rngm.Intn(100) <= chance
 }
-
-func GetSprite(spriteSize Size) (img image.Image) {
+func GetSprite(spriteSize Size) image.Image {
 	var pool []Sprite
 
 	switch spriteSize {
@@ -102,26 +101,78 @@ func GetSprite(spriteSize Size) (img image.Image) {
 	}
 
 	index := rngm.Intn(len(pool))
-	img = loadPNG(pool[index].Filename)
+	entry := pool[index]
+	img := loadPNG(entry.Filename)
 
 	if spriteSize == Special {
 		img = rescaleSprite(img)
 	}
 
-	if param.InputParams.Animated && pool[index].CanBeAnimated {
-		opacity := OpacityValues[pool[index].OpacityIndex]
-		img = modifyOpacity(img, opacity)
+	img = ColorizeSprite(img, rngm.Intn(361))
+
+	if param.InputParams.Animated {
+		img = BlinkSprite(img, entry)
 	}
-	return
+
+	return img
 }
 
-func modifyOpacity(img image.Image, alpha uint8) image.Image {
-	return adjust.Apply(img, func(c color.RGBA) color.RGBA {
-		if c.A != 0 {
-			c.A = alpha
+// ColorizeSprite rotates the hue of every non-transparent pixel.
+func ColorizeSprite(img image.Image, hueDegrees int) image.Image {
+	hubble_palette.SetHueRotation(hueDegrees)
+	bounds := img.Bounds()
+	dst := image.NewNRGBA(bounds)
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			r32, g32, b32, a32 := img.At(x, y).RGBA()
+			if a32 == 0 {
+				continue
+			}
+			nr, ng, nb := hubble_palette.ChangeHue(r32, g32, b32)
+			a16 := a32 >> 8
+			dst.SetNRGBA(x, y, color.NRGBA{
+				R: uint8(nr & 0xFF),
+				G: uint8(ng & 0xFF),
+				B: uint8(nb & 0xFF),
+				A: uint8(a16),
+			})
 		}
-		return c
-	})
+	}
+	return dst
+}
+
+func BlinkSprite(img image.Image, entry Sprite) image.Image {
+	if !entry.CanBeAnimated {
+		return img
+	}
+	return ApplyOpacity(img, OpacityValues[entry.OpacityIndex])
+}
+
+// ApplyOpacity sets the alpha of every non-transparent pixel to alpha.
+func ApplyOpacity(img image.Image, alpha uint8) image.Image {
+	// Convert to NRGBA so alpha is stored non-premultiplied.
+	// This guarantees that setting A=128 truly means 50% opacity,
+	// not a half-brightness dimmed sprite.
+	bounds := img.Bounds()
+	dst := image.NewNRGBA(bounds)
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			c := dst.NRGBAAt(x, y)
+			src := img.At(x, y)
+			r, g, b, a := src.RGBA() // returns 16-bit premultiplied values
+			if a == 0 {
+				continue // leave fully-transparent pixels at zero
+			}
+			// Un-premultiply: scale each channel back to 8-bit full brightness
+			a16 := a >> 8 // 0-255, as uint32
+			c.R = uint8((r >> 8) * 255 / a16)
+			c.G = uint8((g >> 8) * 255 / a16)
+			c.B = uint8((b >> 8) * 255 / a16)
+			c.A = alpha
+			dst.SetNRGBA(x, y, c)
+		}
+	}
+	return dst
 }
 
 func rescaleSprite(sprite image.Image) (newSprite image.Image) {
