@@ -22,27 +22,35 @@ const dim_x int = 500 // width
 const dim_y int = 500 // height
 
 func GenerateGalaxy() error {
-	var noOfFrames int = 1
 	if param.InputParams.Animated {
-		noOfFrames = 10
+		return saveAsWebp(GenerateFrames())
+	} else {
+		return saveAsPng(GenerateSingleImage())
 	}
+}
+
+func GenerateSingleImage() image.Image {
+	canvas := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
+	paintBackground(canvas)
+	paintSprite(canvas, sprites.Small)
+	paintSprite(canvas, sprites.Medium)
+	paintSprite(canvas, sprites.Large)
+	paintSprite(canvas, sprites.Special)
+	return canvas
+}
+
+func GenerateFrames() []image.Image {
+	noOfFrames := 10 // TODO make it configurable through TOML file
 	images := make([]image.Image, noOfFrames)
 
+	sprites.SetOpacityIndexes()
 	for i := 0; i < noOfFrames; i++ {
-		frame := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
+		frame := GenerateSingleImage()
 		images[i] = frame
-		paintBackground(frame)
-		paintSprite(frame, sprites.Small)
-		paintSprite(frame, sprites.Medium)
-		paintSprite(frame, sprites.Large)
-		paintSprite(frame, sprites.Special)
+		sprites.AdvanceOpacityIndexes()
+		rngm.ReloadSeed() // We force the next frame to generate exactly the same as the previous one
 	}
-
-	if param.InputParams.Animated {
-		return saveAsWebp(images)
-	} else {
-		return saveAsPng(images[0])
-	}
+	return images
 }
 
 func paintBackground(frame *image.NRGBA) {
@@ -90,6 +98,10 @@ func paintSprite(frame *image.NRGBA, spriteSize sprites.Size) {
 			// Random position (coordinates) in the image
 			x_c := rngm.Intn(dim_x)
 			y_c := rngm.Intn(dim_y)
+
+			// TODO?
+			// Decide rotation of the sprite
+			// Decide if resizing is done?
 
 			// Draw the sprite
 			dp := image.Pt(x_c, y_c)

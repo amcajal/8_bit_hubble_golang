@@ -98,14 +98,33 @@ func GetSprite(spriteSize Size) (img image.Image) {
 		pool = specialSprites
 	}
 
-	img = loadPNG(pool[rngm.Intn(len(pool))].Filename)
+	index := rngm.Intn(len(pool))
+	img = loadPNG(pool[index].Filename)
 
 	if spriteSize == Special {
 		img = rescaleSprite(img)
 	}
 
+	/*
+		if param.InputParams.Animated && pool[index].CanBeAnimated {
+			opacity := opacityValues[pool[index].OpacityIndex]
+			img = modifyOpacity(img, opacity)
+		}
+	*/
 	return
 }
+
+/*
+func modifyOpacity(img image.Image, opacity int) image.Image {
+	img = img.(*image.NRGBA)
+	for i := 0; i < img.Bounds().Max.X; i++ {
+		for j := 0; j < img.Bounds().Max.Y; j++ {
+			img.At(i, j).RGBA().A = opacity
+		}
+	}
+	return img
+}
+*/
 
 func rescaleSprite(sprite image.Image) (newSprite image.Image) {
 	newSprite = sprite
@@ -131,4 +150,30 @@ func loadPNG(filename string) image.Image {
 		panic("sprites: cannot decode PNG " + filename + ": " + err.Error())
 	}
 	return img
+}
+
+// TODO: Merge both methods so they do the op depending on a flag, and checking if canBeAnimated is true
+func SetOpacityIndexes() {
+	v := len(opacityValues)
+	for _, sprite := range smallSprites {
+		sprite.OpacityIndex = rngm.Intn(v)
+	}
+	for _, sprite := range mediumSprites {
+		sprite.OpacityIndex = rngm.Intn(v)
+	}
+	for _, sprite := range bigSprites {
+		sprite.OpacityIndex = rngm.Intn(v)
+	}
+}
+
+func AdvanceOpacityIndexes() {
+	for _, sprite := range smallSprites {
+		sprite.OpacityIndex = (sprite.OpacityIndex + 1) % len(opacityValues)
+	}
+	for _, sprite := range mediumSprites {
+		sprite.OpacityIndex = (sprite.OpacityIndex + 1) % len(opacityValues)
+	}
+	for _, sprite := range bigSprites {
+		sprite.OpacityIndex = (sprite.OpacityIndex + 1) % len(opacityValues)
+	}
 }

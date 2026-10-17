@@ -176,8 +176,14 @@ func LoadConfig(path string) error {
 }
 
 var r *rand.Rand
+var seed int64
 
-func Init(seed int64) {
+func LoadSeed(s int64) {
+	r = rand.New(rand.NewSource(s))
+	seed = s
+}
+
+func ReloadSeed() {
 	r = rand.New(rand.NewSource(seed))
 }
 

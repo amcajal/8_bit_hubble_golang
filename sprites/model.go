@@ -2,10 +2,14 @@
 // the application (i.e: stars, planets)
 package sprites
 
+var opacityValues = []int{100, 75, 50, 25, 0, 25, 50, 75} // In percentages
+
 // Sprite holds the name and the filename of the PNG asset for a single sprite.
 type Sprite struct {
-	Name     string
-	Filename string
+	Name          string
+	Filename      string
+	OpacityIndex  int
+	CanBeAnimated bool
 }
 
 type Size uint8
