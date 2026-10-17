@@ -2,11 +2,13 @@ package sprites
 
 import (
 	"image"
+	"image/color"
 	"image/png"
 
 	"github.com/amcajal/8_bit_hubble_golang/param"
 	"github.com/amcajal/8_bit_hubble_golang/rngm"
 	"github.com/amcajal/pixelart/scale"
+	"github.com/anthonynsimon/bild/adjust"
 )
 
 // Name in honor of Bob Ross
@@ -107,36 +109,19 @@ func GetSprite(spriteSize Size) (img image.Image) {
 	}
 
 	if param.InputParams.Animated && pool[index].CanBeAnimated {
-		opacity := opacityValues[pool[index].OpacityIndex]
+		opacity := OpacityValues[pool[index].OpacityIndex]
 		img = modifyOpacity(img, opacity)
 	}
 	return
 }
 
 func modifyOpacity(img image.Image, alpha uint8) image.Image {
-	bounds := img.Bounds()
-	switch v := img.(type) {
-	case *image.NRGBA:
-		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-			for x := bounds.Min.X; x < bounds.Max.X; x++ {
-				c := v.NRGBAAt(x, y)
-				c.A = alpha
-				v.SetNRGBA(x, y, c)
-			}
+	return adjust.Apply(img, func(c color.RGBA) color.RGBA {
+		if c.A != 0 {
+			c.A = alpha
 		}
-		return v
-	case *image.RGBA:
-		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-			for x := bounds.Min.X; x < bounds.Max.X; x++ {
-				c := v.RGBAAt(x, y)
-				c.A = alpha
-				v.SetRGBA(x, y, c)
-			}
-		}
-		return v
-	default:
-		panic("modifyOpacity: unsupported image type")
-	}
+		return c
+	})
 }
 
 func rescaleSprite(sprite image.Image) (newSprite image.Image) {
@@ -165,28 +150,30 @@ func loadPNG(filename string) image.Image {
 	return img
 }
 
-// TODO: Merge both methods so they do the op depending on a flag, and checking if canBeAnimated is true
-func SetOpacityIndexes() {
-	v := len(opacityValues)
-	for _, sprite := range smallSprites {
-		sprite.OpacityIndex = rngm.Intn(v)
-	}
-	for _, sprite := range mediumSprites {
-		sprite.OpacityIndex = rngm.Intn(v)
-	}
-	for _, sprite := range bigSprites {
-		sprite.OpacityIndex = rngm.Intn(v)
-	}
+const (
+	MODE_INIT = iota
+	MODE_ADVANCE
+)
+
+func InitOpacityIndexes() {
+	setOpacityIndexes(MODE_INIT)
 }
 
 func AdvanceOpacityIndexes() {
-	for _, sprite := range smallSprites {
-		sprite.OpacityIndex = (sprite.OpacityIndex + 1) % len(opacityValues)
-	}
-	for _, sprite := range mediumSprites {
-		sprite.OpacityIndex = (sprite.OpacityIndex + 1) % len(opacityValues)
-	}
-	for _, sprite := range bigSprites {
-		sprite.OpacityIndex = (sprite.OpacityIndex + 1) % len(opacityValues)
+	setOpacityIndexes(MODE_ADVANCE)
+}
+
+func setOpacityIndexes(mode int) {
+	v := len(OpacityValues)
+	pools := []*[]Sprite{&smallSprites, &mediumSprites, &bigSprites}
+	for _, pool := range pools {
+		for i := range *pool {
+			switch mode {
+			case MODE_INIT:
+				(*pool)[i].OpacityIndex = rngm.Intn(v)
+			case MODE_ADVANCE:
+				(*pool)[i].OpacityIndex = ((*pool)[i].OpacityIndex + 1) % v
+			}
+		}
 	}
 }

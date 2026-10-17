@@ -31,7 +31,7 @@ func GenerateGalaxy() error {
 
 func GenerateSingleImage() image.Image {
 	canvas := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
-	paintBackground(canvas)
+	paintBackground(canvas, buildBackground())
 	paintSprite(canvas, sprites.Small)
 	paintSprite(canvas, sprites.Medium)
 	paintSprite(canvas, sprites.Large)
@@ -40,32 +40,48 @@ func GenerateSingleImage() image.Image {
 }
 
 func GenerateFrames() []image.Image {
-	noOfFrames := 10 // TODO make it configurable through TOML file
+	noOfFrames := len(sprites.OpacityValues)
 	images := make([]image.Image, noOfFrames)
 
-	sprites.SetOpacityIndexes()
+	// bild lib uses a RNG that is not controlled by our seed.
+	// So we build the background once and reuse it across all frames.
+	bg := buildBackground()
+
+	sprites.InitOpacityIndexes()
 	for i := 0; i < noOfFrames; i++ {
-		frame := GenerateSingleImage()
+		rngm.ReloadSeed() // Reset seed so every frame draws the same sprites in the same positions
+		frame := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
+		paintBackground(frame, bg)
+		paintSprite(frame, sprites.Small)
+		paintSprite(frame, sprites.Medium)
+		paintSprite(frame, sprites.Large)
+		paintSprite(frame, sprites.Special)
 		images[i] = frame
 		sprites.AdvanceOpacityIndexes()
-		rngm.ReloadSeed() // We force the next frame to generate exactly the same as the previous one
 	}
 	return images
 }
 
-func paintBackground(frame *image.NRGBA) {
+func buildBackground() image.Image {
+	bg := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
 	black := color.RGBA{0, 0, 0, 255}
-	draw.Draw(frame, frame.Bounds(), &image.Uniform{black}, image.Point{}, draw.Src)
+	draw.Draw(bg, bg.Bounds(), &image.Uniform{black}, image.Point{}, draw.Src)
 
 	if sprites.ShouldPaintNebula() {
 		nebula := sprites.GenerateNebula()
-		draw.Draw(frame, frame.Bounds(), nebula, image.Point{}, draw.Over)
+		draw.Draw(bg, bg.Bounds(), nebula, image.Point{}, draw.Over)
 	}
 
 	if sprites.ShouldPaintCosmicLatteBackground() {
 		stars_background := sprites.GetCosmicLatteBackground()
-		draw.Draw(frame, frame.Bounds(), stars_background, image.Point{}, draw.Over)
+		draw.Draw(bg, bg.Bounds(), stars_background, image.Point{}, draw.Over)
 	}
+
+	return bg
+}
+
+func paintBackground(frame *image.NRGBA, bg image.Image) {
+	draw.Draw(frame, frame.Bounds(), bg, image.Point{}, draw.Src)
 }
 
 // There is a chance% probability of painting sprites. If success, paint
@@ -189,7 +205,7 @@ func saveAsWebp(images []image.Image) error {
 	durations := make([]uint, len(images))
 	disposals := make([]uint, len(images))
 	for i := range images {
-		durations[i] = 100
+		durations[i] = 500
 		disposals[i] = 0 // 0 = keep frame (no disposal)
 	}
 

@@ -28,5 +28,4 @@ var specialSprites = []Sprite{
 	{Name: "planet_50x50", Filename: "assets/planet_50x50.png", CanBeAnimated: false},
 	{Name: "planet_100x100", Filename: "assets/planet_100x100.png", CanBeAnimated: false},
 	{Name: "planet_125x125", Filename: "assets/planet_125x125.png", CanBeAnimated: false},
-	{Name: "planet_150x150", Filename: "assets/planet_150x150.png", CanBeAnimated: false},
 }
