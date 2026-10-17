@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/png"
 
+	"github.com/amcajal/8_bit_hubble_golang/param"
 	"github.com/amcajal/8_bit_hubble_golang/rngm"
 	"github.com/amcajal/pixelart/scale"
 )
@@ -105,26 +106,38 @@ func GetSprite(spriteSize Size) (img image.Image) {
 		img = rescaleSprite(img)
 	}
 
-	/*
-		if param.InputParams.Animated && pool[index].CanBeAnimated {
-			opacity := opacityValues[pool[index].OpacityIndex]
-			img = modifyOpacity(img, opacity)
-		}
-	*/
+	if param.InputParams.Animated && pool[index].CanBeAnimated {
+		opacity := opacityValues[pool[index].OpacityIndex]
+		img = modifyOpacity(img, opacity)
+	}
 	return
 }
 
-/*
-func modifyOpacity(img image.Image, opacity int) image.Image {
-	img = img.(*image.NRGBA)
-	for i := 0; i < img.Bounds().Max.X; i++ {
-		for j := 0; j < img.Bounds().Max.Y; j++ {
-			img.At(i, j).RGBA().A = opacity
+func modifyOpacity(img image.Image, alpha uint8) image.Image {
+	bounds := img.Bounds()
+	switch v := img.(type) {
+	case *image.NRGBA:
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			for x := bounds.Min.X; x < bounds.Max.X; x++ {
+				c := v.NRGBAAt(x, y)
+				c.A = alpha
+				v.SetNRGBA(x, y, c)
+			}
 		}
+		return v
+	case *image.RGBA:
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			for x := bounds.Min.X; x < bounds.Max.X; x++ {
+				c := v.RGBAAt(x, y)
+				c.A = alpha
+				v.SetRGBA(x, y, c)
+			}
+		}
+		return v
+	default:
+		panic("modifyOpacity: unsupported image type")
 	}
-	return img
 }
-*/
 
 func rescaleSprite(sprite image.Image) (newSprite image.Image) {
 	newSprite = sprite
