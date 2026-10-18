@@ -5,10 +5,11 @@ import (
 	"image/color"
 	"image/png"
 
+	"github.com/anthonynsimon/bild/transform"
+
 	hubble_palette "github.com/amcajal/8_bit_hubble_golang/palette"
 	"github.com/amcajal/8_bit_hubble_golang/param"
 	"github.com/amcajal/8_bit_hubble_golang/rngm"
-	"github.com/amcajal/pixelart/scale"
 )
 
 // Name in honor of Bob Ross
@@ -104,9 +105,7 @@ func GetSprite(spriteSize Size) image.Image {
 	entry := pool[index]
 	img := loadPNG(entry.Filename)
 
-	if spriteSize == Special {
-		img = rescaleSprite(img)
-	}
+	img = rotateAndScaleSprite(img, spriteSize)
 
 	img = ColorizeSprite(img, rngm.Intn(361))
 
@@ -172,15 +171,25 @@ func ApplyOpacity(img image.Image, alpha uint8) image.Image {
 	return dst
 }
 
-func rescaleSprite(sprite image.Image) (newSprite image.Image) {
-	newSprite = sprite
+func rotateAndScaleSprite(sprite image.Image, spriteSize Size) image.Image {
+	result := sprite
 
-	if p := rngm.Intn(4); p < 2 {
-		for i := 0; i <= p; i++ {
-			newSprite = scale.Scale2X(sprite.(*image.NRGBA))
-		}
+	rotationMaxAngle := 90
+	if spriteSize == Special {
+		rotationMaxAngle = 360
 	}
-	return
+
+	if rngm.Intn(100) < rngm.Cfg.ScaleChance {
+		b := result.Bounds()
+		result = transform.Resize(result, b.Dx()*2, b.Dy()*2, transform.NearestNeighbor)
+	}
+
+	if rngm.Intn(100) < rngm.Cfg.RotationChance {
+		angle := rngm.Intn(rotationMaxAngle) + 1
+		result = transform.Rotate(result, float64(angle), &transform.RotationOptions{ResizeBounds: true})
+	}
+
+	return result
 }
 
 // loadPNG reads a PNG file from the embedded assets FS and decodes it.

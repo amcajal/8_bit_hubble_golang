@@ -48,3 +48,10 @@
 # SpecialChance               = 50
 # CosmicLatteBackgroundChance = 50
 # NebulaChance                = 50
+
+# ---------------------------------------------------------------------------
+# Probability (0-100) that geometric transforms are applied to each sprite.
+# 100 = always applied, 0 = never applied.
+# ---------------------------------------------------------------------------
+# RotationChance = 50
+# ScaleChance    = 50

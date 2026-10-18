@@ -110,10 +110,6 @@ func paintSprite(frame *image.NRGBA, spriteSize sprites.Size) {
 			x_c := rngm.Intn(dim_x)
 			y_c := rngm.Intn(dim_y)
 
-			// TODO?
-			// Decide rotation of the sprite
-			// Decide if resizing is done?
-
 			// Draw the sprite
 			dp := image.Pt(x_c, y_c)
 			r := image.Rectangle{dp, dp.Add(sb.Size())}
