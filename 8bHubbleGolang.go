@@ -23,5 +23,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("Galaxy Generated!")
+	log.Printf("Galaxy Generated! Seed: %d", param.InputParams.Seed)
 }
