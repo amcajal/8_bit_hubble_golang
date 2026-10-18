@@ -145,12 +145,12 @@ func checkOutputDir() error {
 		return errors.New("Provided output dir (" + InputParams.OutputDir + ") is NOT a directory")
 	}
 
-	// @TODO this only works if the user launching the app is the owner of the target directory
-	// Probably there is a better way to do this:
-	// Isolate owner's read and write bits, and check both are high
-	if rw := ((status.Mode()) >> 0x07) & 0x03; rw != 0x03 {
-		return errors.New("Provided output dir (" + InputParams.OutputDir + ") DOES NOT HAVE read and write perms")
+	tmp, err := os.CreateTemp(InputParams.OutputDir, ".8bh_write_check_*")
+	if err != nil {
+		return errors.New("Provided output dir (" + InputParams.OutputDir + ") is not writable: " + err.Error())
 	}
+	tmp.Close()
+	os.Remove(tmp.Name())
 
 	return nil
 }
