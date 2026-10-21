@@ -11,9 +11,9 @@ import (
 
 	"github.com/HugoSmits86/nativewebp"
 
-	"github.com/amcajal/8_bit_hubble_golang/param"
-	"github.com/amcajal/8_bit_hubble_golang/rngm"
-	"github.com/amcajal/8_bit_hubble_golang/sprites"
+	"github.com/amcajal/8_bit_hubble_golang/internal/param"
+	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
+	"github.com/amcajal/8_bit_hubble_golang/internal/sprites"
 )
 
 // Fixed dimensions of the output image
