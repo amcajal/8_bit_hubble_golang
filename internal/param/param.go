@@ -41,31 +41,58 @@ func CheckParams() error {
 		}
 	}
 
-	// Register each flag twice (short + long) sharing the same variable.
 	defaultSeed := time.Now().Unix()
 
-	flag.StringVar(&InputParams.OutputDir, "o", "./", "")
-	flag.StringVar(&InputParams.OutputDir, "output", "./", "")
+	// Use a fresh FlagSet every time so re-entrant calls (e.g. from a GUI
+	// that generates multiple images) do not panic with "flag redefined".
+	fs := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+	fs.Usage = func() {}
 
-	flag.StringVar(&InputParams.OutputFileName, "n", "8bh_galaxy", "")
-	flag.StringVar(&InputParams.OutputFileName, "name", "8bh_galaxy", "")
+	// Register each flag twice (short + long) sharing the same variable.
+	fs.StringVar(&InputParams.OutputDir, "o", "./", "")
+	fs.StringVar(&InputParams.OutputDir, "output", "./", "")
 
-	flag.Int64Var(&InputParams.Seed, "s", defaultSeed, "")
-	flag.Int64Var(&InputParams.Seed, "seed", defaultSeed, "")
+	fs.StringVar(&InputParams.OutputFileName, "n", "8bh_galaxy", "")
+	fs.StringVar(&InputParams.OutputFileName, "name", "8bh_galaxy", "")
 
-	flag.StringVar(&InputParams.ConfigFile, "c", "", "")
-	flag.StringVar(&InputParams.ConfigFile, "config", "", "")
+	fs.Int64Var(&InputParams.Seed, "s", defaultSeed, "")
+	fs.Int64Var(&InputParams.Seed, "seed", defaultSeed, "")
 
-	flag.BoolVar(&InputParams.Animated, "a", false, "")
-	flag.BoolVar(&InputParams.Animated, "animated", false, "")
+	fs.StringVar(&InputParams.ConfigFile, "c", "", "")
+	fs.StringVar(&InputParams.ConfigFile, "config", "", "")
 
-	flag.BoolVar(&InputParams.Paletted, "p", false, "")
-	flag.BoolVar(&InputParams.Paletted, "paletted", false, "")
+	fs.BoolVar(&InputParams.Animated, "a", false, "")
+	fs.BoolVar(&InputParams.Animated, "animated", false, "")
 
-	// Suppress the default usage output
-	flag.Usage = func() {}
+	fs.BoolVar(&InputParams.Paletted, "p", false, "")
+	fs.BoolVar(&InputParams.Paletted, "paletted", false, "")
 
-	flag.Parse()
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		return err
+	}
+
+	if paramError := checkOutputDir(); paramError != nil {
+		return paramError
+	}
+
+	if paramError := checkConfigFile(); paramError != nil {
+		return paramError
+	}
+
+	appendExtension()
+
+	return nil
+}
+
+// CheckParamsDirect populates InputParams directly from the values supplied by
+// the GUI, skipping os.Args entirely. Safe to call any number of times.
+func CheckParamsDirect(outputDir, fileName, configFile string, seed int64, animated, paletted bool) error {
+	InputParams.OutputDir = outputDir
+	InputParams.OutputFileName = fileName
+	InputParams.Seed = seed
+	InputParams.ConfigFile = configFile
+	InputParams.Animated = animated
+	InputParams.Paletted = paletted
 
 	if paramError := checkOutputDir(); paramError != nil {
 		return paramError

@@ -1,4 +1,5 @@
 *.personal
 *.png
 *.webp
+*.exe
 !sprites/assets/*.png
