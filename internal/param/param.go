@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/amcajal/8_bit_hubble_golang/rngm"
+	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
 )
 
 const version string = "v1.0.0"

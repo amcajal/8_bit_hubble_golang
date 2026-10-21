@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/amcajal/8_bit_hubble_golang/galaxy"
-	"github.com/amcajal/8_bit_hubble_golang/param"
-	"github.com/amcajal/8_bit_hubble_golang/rngm"
+	"github.com/amcajal/8_bit_hubble_golang/internal/galaxy"
+	"github.com/amcajal/8_bit_hubble_golang/internal/param"
+	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
 )
 
 func main() {
