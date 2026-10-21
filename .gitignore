@@ -3,3 +3,4 @@
 *.webp
 *.exe
 !sprites/assets/*.png
+!examples/*
