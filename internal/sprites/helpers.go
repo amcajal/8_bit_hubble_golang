@@ -96,7 +96,7 @@ func GetSprite(spriteSize Size) image.Image {
 	case Medium:
 		pool = mediumSprites
 	case Large:
-		pool = bigSprites
+		pool = largeSprites
 	default: // Special
 		pool = specialSprites
 	}
@@ -222,7 +222,7 @@ func AdvanceOpacityIndexes() {
 
 func setOpacityIndexes(mode int) {
 	v := len(OpacityValues)
-	pools := []*[]Sprite{&smallSprites, &mediumSprites, &bigSprites}
+	pools := []*[]Sprite{&smallSprites, &mediumSprites, &largeSprites}
 	for _, pool := range pools {
 		for i := range *pool {
 			switch mode {

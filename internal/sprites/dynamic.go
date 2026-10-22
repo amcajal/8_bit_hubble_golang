@@ -14,7 +14,7 @@ import (
 func blackToTransparent(img image.Image) *image.RGBA {
 	return adjust.Apply(img, func(c color.RGBA) color.RGBA {
 		if c.R == 0 && c.G == 0 && c.B == 0 {
-			c.A = 0 // Transparente
+			c.A = 0 // Transparent
 		}
 		return c
 	})

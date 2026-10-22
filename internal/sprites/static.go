@@ -19,7 +19,7 @@ var mediumSprites = []Sprite{
 	{Name: "cross_star_20x20", Filename: "assets/cross_star_20x20.png", CanBeAnimated: true},
 }
 
-var bigSprites = []Sprite{
+var largeSprites = []Sprite{
 	{Name: "combined_star_48x48", Filename: "assets/combined_star_48x48.png", CanBeAnimated: true},
 	{Name: "cross_star_30x30", Filename: "assets/cross_star_30x30.png", CanBeAnimated: true},
 }
