@@ -28,13 +28,18 @@ func GenerateGalaxy() error {
 	}
 }
 
-func GenerateSingleImage() image.Image {
-	canvas := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
-	paintBackground(canvas, buildBackground())
+func paintForeground(canvas *image.NRGBA) {
+	rngm.ReloadSeed() // Reset seed so output in animated and static modes match
 	paintSprite(canvas, sprites.Small)
 	paintSprite(canvas, sprites.Medium)
 	paintSprite(canvas, sprites.Large)
 	paintSprite(canvas, sprites.Special)
+}
+
+func GenerateSingleImage() image.Image {
+	canvas := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
+	paintBackground(canvas, buildBackground())
+	paintForeground(canvas)
 	return canvas
 }
 
@@ -48,13 +53,9 @@ func GenerateFrames() []image.Image {
 
 	sprites.InitOpacityIndexes()
 	for i := 0; i < noOfFrames; i++ {
-		rngm.ReloadSeed() // Reset seed so every frame draws the same sprites in the same positions
 		frame := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
 		paintBackground(frame, bg)
-		paintSprite(frame, sprites.Small)
-		paintSprite(frame, sprites.Medium)
-		paintSprite(frame, sprites.Large)
-		paintSprite(frame, sprites.Special)
+		paintForeground(frame)
 		images[i] = frame
 		sprites.AdvanceOpacityIndexes()
 	}
