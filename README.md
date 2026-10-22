@@ -118,6 +118,13 @@ go build -o 8bHubbleGolang-gui ./cmd/gui
 
 ---
 
+## Known issues
+
+### Rogue RNG
+The application generates some "sprites" using third-party libraries (noise generation algorithms). Those third-party libraries seed the RNG package themselves during their operations, so they cannot be controlled from **8-bit Hubble** side. This means that some of these sprites (the nebula and the cosmic latte background) are going to be different, even when the user sets manually a seed.
+
+---
+
 ## License
 
 **8-bit Hubble** was created by Alberto Martin Cajal. This Go reimplementation and extension is released under **GNU GPL v3.0**—see [`LICENSE`](LICENSE) and the [GPL text](https://www.gnu.org/licenses/gpl-3.0.en.html).
