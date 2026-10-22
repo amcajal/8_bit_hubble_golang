@@ -108,6 +108,7 @@ func GetSprite(spriteSize Size) image.Image {
 	img = scaleSprite(img, spriteSize)
 	img = rotateSprite(img, spriteSize)
 	img = colorizeSprite(img, rngm.Intn(361))
+	img = blackToTransparent(img)
 
 	if param.InputParams.Animated {
 		img = BlinkSprite(img, entry)
