@@ -103,11 +103,11 @@ func GetSprite(spriteSize Size) image.Image {
 
 	index := rngm.Intn(len(pool))
 	entry := pool[index]
+
 	img := loadPNG(entry.Filename)
-
-	img = rotateAndScaleSprite(img, spriteSize)
-
-	img = ColorizeSprite(img, rngm.Intn(361))
+	img = scaleSprite(img, spriteSize)
+	img = rotateSprite(img, spriteSize)
+	img = colorizeSprite(img, rngm.Intn(361))
 
 	if param.InputParams.Animated {
 		img = BlinkSprite(img, entry)
@@ -116,8 +116,8 @@ func GetSprite(spriteSize Size) image.Image {
 	return img
 }
 
-// ColorizeSprite rotates the hue of every non-transparent pixel.
-func ColorizeSprite(img image.Image, hueDegrees int) image.Image {
+// colorizeSprite rotates the hue of every non-transparent pixel.
+func colorizeSprite(img image.Image, hueDegrees int) image.Image {
 	hubble_palette.SetHueRotation(hueDegrees)
 	bounds := img.Bounds()
 	dst := image.NewNRGBA(bounds)
@@ -171,22 +171,26 @@ func ApplyOpacity(img image.Image, alpha uint8) image.Image {
 	return dst
 }
 
-func rotateAndScaleSprite(sprite image.Image, spriteSize Size) image.Image {
+func rotateSprite(sprite image.Image, spriteSize Size) image.Image {
 	result := sprite
-
 	rotationMaxAngle := 90
+
 	if spriteSize == Special {
 		rotationMaxAngle = 360
-	}
-
-	if rngm.Intn(100) < rngm.Cfg.ScaleChance {
-		b := result.Bounds()
-		result = transform.Resize(result, b.Dx()*2, b.Dy()*2, transform.NearestNeighbor)
 	}
 
 	if rngm.Intn(100) < rngm.Cfg.RotationChance {
 		angle := rngm.Intn(rotationMaxAngle) + 1
 		result = transform.Rotate(result, float64(angle), &transform.RotationOptions{ResizeBounds: true})
+	}
+	return result
+}
+func scaleSprite(sprite image.Image, spriteSize Size) image.Image {
+	result := sprite
+
+	if rngm.Intn(100) < rngm.Cfg.ScaleChance {
+		b := result.Bounds()
+		result = transform.Resize(result, b.Dx()*2, b.Dy()*2, transform.NearestNeighbor)
 	}
 
 	return result
