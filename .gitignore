@@ -4,3 +4,4 @@
 *.exe
 !sprites/assets/*.png
 !examples/*
+!cmd/gui/assets/*
