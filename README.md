@@ -1,5 +1,5 @@
 <!--- PROJECT LOGO --->
-![project_logo](https://github.com/amcajal/8_bit_hubble_golang/blob/master/project/doc/media/8_bit_hubble_golang_logo.png)
+![project_logo](https://github.com/amcajal/8_bit_hubble_golang/blob/master/cmd/gui/assets/logo.png)
 
 **8-bit Hubble (Go)** is a complete reimplementation—and ongoing **extension**—of the original [**8-bit Hubble**](https://github.com/amcajal/8_bit_hubble)
 
