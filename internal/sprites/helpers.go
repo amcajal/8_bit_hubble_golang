@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"image/png"
 
-	"github.com/anthonynsimon/bild/transform"
+	"github.com/amcajal/bild_modfor8bhg/transform"
 
 	hubble_palette "github.com/amcajal/8_bit_hubble_golang/internal/palette"
 	"github.com/amcajal/8_bit_hubble_golang/internal/param"

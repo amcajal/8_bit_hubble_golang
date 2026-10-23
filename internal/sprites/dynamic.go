@@ -6,9 +6,9 @@ import (
 	"image/draw"
 
 	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
-	"github.com/anthonynsimon/bild/adjust"
-	"github.com/anthonynsimon/bild/blend"
-	"github.com/anthonynsimon/bild/noise"
+	"github.com/amcajal/bild_modfor8bhg/adjust"
+	"github.com/amcajal/bild_modfor8bhg/blend"
+	"github.com/amcajal/bild_modfor8bhg/noise"
 )
 
 func blackToTransparent(img image.Image) *image.RGBA {

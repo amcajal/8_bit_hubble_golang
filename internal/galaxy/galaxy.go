@@ -14,6 +14,7 @@ import (
 	"github.com/amcajal/8_bit_hubble_golang/internal/param"
 	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
 	"github.com/amcajal/8_bit_hubble_golang/internal/sprites"
+	"github.com/amcajal/bild_modfor8bhg/noise"
 )
 
 // Fixed dimensions of the output image
@@ -38,6 +39,7 @@ func paintForeground(canvas *image.NRGBA) {
 
 func GenerateSingleImage() image.Image {
 	canvas := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
+	noise.SetRandSource(rngm.GetRand())
 	paintBackground(canvas, buildBackground())
 	paintForeground(canvas)
 	return canvas
@@ -47,8 +49,7 @@ func GenerateFrames() []image.Image {
 	noOfFrames := len(sprites.OpacityValues)
 	images := make([]image.Image, noOfFrames)
 
-	// bild lib uses a RNG that is not controlled by our seed.
-	// So we build the background once and reuse it across all frames.
+	noise.SetRandSource(rngm.GetRand())
 	bg := buildBackground()
 
 	sprites.InitOpacityIndexes()

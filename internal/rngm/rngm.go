@@ -207,3 +207,9 @@ func ReloadSeed() {
 func Intn(n int) int {
 	return r.Intn(n)
 }
+
+// GetRand returns the current seeded *rand.Rand instance.
+// Use this to share the same random source with external packages.
+func GetRand() *rand.Rand {
+	return r
+}

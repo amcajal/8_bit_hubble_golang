@@ -13,6 +13,8 @@ github.com/BurntSushi/toml v1.6.0 h1:dRaEfpa2VI55EwlIW72hMRHdWouJeRF7TPYhI+AUQjk
 github.com/BurntSushi/toml v1.6.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/HugoSmits86/nativewebp v1.3.0 h1:n1egtEzSV4KwFtealr7dzdYq1wI/uj/bOQ/QcTcIyVE=
 github.com/HugoSmits86/nativewebp v1.3.0/go.mod h1:YNQuWenlVmSUUASVNhTDwf4d7FwYQGbGhklC8p72Vr8=
+github.com/amcajal/bild_modfor8bhg v0.1.3 h1:Adqb7qyN9uEgRFzRvVhrYmUxRAtaXjBSiuhohejT+/M=
+github.com/amcajal/bild_modfor8bhg v0.1.3/go.mod h1:KG1dDltc65TQxB4BZMCF3vBxOa/g3ZopI6pCw92am3k=
 github.com/anthonynsimon/bild v0.17.1 h1:CVcoR+jxUx++UBXpVJHTjt7RmfEbsnhtlqPR5utSfiU=
 github.com/anthonynsimon/bild v0.17.1/go.mod h1:eUfWJXV5GGXA2Gobz4osvpJdkdEVZpXwDSJi/PAXnpA=
 github.com/go-ole/go-ole v1.2.6 h1:/Fpf6oFPoeFik9ty7siob0G6Ke8QvQEuVcuChpwXzpY=
