@@ -2,6 +2,6 @@
 *.png
 *.webp
 *.exe
-!sprites/assets/*.png
+!internal/sprites/assets/*.png
 !examples/*
 !cmd/gui/assets/*
