@@ -118,10 +118,11 @@ go build -o 8bHubbleGolang-gui ./cmd/gui
 
 ---
 
-## Known issues
+## Dependencies — bild_modfor8bhg
 
-### Rogue RNG
-The application generates some "sprites" using third-party libraries (noise generation algorithms). Those third-party libraries seed the RNG package themselves during their operations, so they cannot be controlled from **8-bit Hubble** side. This means that some of these sprites (the nebula and the cosmic latte background) are going to be different, even when the user sets manually a seed.
+Image processing (noise generation, blending, colour adjustment) is handled by [**bild_modfor8bhg**](https://github.com/amcajal/bild_modfor8bhg), a custom fork of the [anthonynsimon/bild](https://github.com/anthonynsimon/bild) library.
+
+The fork was created to solve a **determinism requirement**: the upstream library initialised its own internal random sources independently, so Perlin noise and binary noise outputs were non-reproducible even when the same seed was provided to 8-bit Hubble. The fork fixes that.
 
 ---
 
