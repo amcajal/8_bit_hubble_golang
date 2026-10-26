@@ -1,0 +1,19 @@
+# only_large_sprites.toml
+# Isolates large sprite generation. All other visual elements are suppressed.
+# Forces 2 layers with 3 sprites each for a visible, repeatable result.
+#
+# Usage:
+#   go run ./cmd/cli -c tests/only_large_sprites.toml -n test_large_sprites
+
+# -- Target feature --
+DefaultChance           = 100
+NoOfLargeSpriteLayers   = 2
+NoOfLargeSpriteElements = 3
+
+# -- Everything else suppressed --
+NebulaChance                = 0
+CosmicLatteBackgroundChance = 0
+SpecialChance               = 0
+NoOfSmallSpriteLayers       = 0
+NoOfMediumSpriteLayers      = 0
+NoOfSpecialSpriteLayers     = 0

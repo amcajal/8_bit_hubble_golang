@@ -1,0 +1,16 @@
+# only_special_sprites.toml
+# Isolates special sprite generation (e.g. planets). All other visual elements are suppressed.
+# Forces 1 layer with 1 sprite — special sprites are large, so 1 is enough to verify.
+#
+# Usage:
+#   go run ./cmd/cli -c tests/only_special_sprites.toml -n test_special_sprites
+
+# -- Target feature --
+SpecialChance             = 100
+NoOfSpecialSpriteLayers   = 1
+NoOfSpecialSpriteElements = 1
+
+# -- Everything else suppressed --
+NebulaChance                = 0
+CosmicLatteBackgroundChance = 0
+DefaultChance               = 0

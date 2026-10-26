@@ -1,0 +1,13 @@
+# only_cosmic_latte.toml
+# Isolates the cosmic latte star-field background. All other visual elements are suppressed.
+#
+# Usage:
+#   go run ./cmd/cli -c tests/only_cosmic_latte.toml -n test_cosmic_latte
+
+# -- Target feature --
+CosmicLatteBackgroundChance = 100
+
+# -- Everything else suppressed --
+NebulaChance  = 0
+DefaultChance = 0
+SpecialChance = 0

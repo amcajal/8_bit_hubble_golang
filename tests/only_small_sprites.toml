@@ -1,0 +1,19 @@
+# only_small_sprites.toml
+# Isolates small sprite generation. All other visual elements are suppressed.
+# Forces 2 layers with 10 sprites each for a visible, repeatable result.
+#
+# Usage:
+#   go run ./cmd/cli -c tests/only_small_sprites.toml -n test_small_sprites
+
+# -- Target feature --
+DefaultChance          = 100
+NoOfSmallSpriteLayers  = 2
+NoOfSmallSpriteElements = 10
+
+# -- Everything else suppressed --
+NebulaChance                = 0
+CosmicLatteBackgroundChance = 0
+SpecialChance               = 0
+NoOfMediumSpriteLayers      = 0
+NoOfLargeSpriteLayers       = 0
+NoOfSpecialSpriteLayers     = 0

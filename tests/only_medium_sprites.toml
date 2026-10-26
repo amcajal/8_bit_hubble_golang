@@ -1,0 +1,19 @@
+# only_medium_sprites.toml
+# Isolates medium sprite generation. All other visual elements are suppressed.
+# Forces 2 layers with 5 sprites each for a visible, repeatable result.
+#
+# Usage:
+#   go run ./cmd/cli -c tests/only_medium_sprites.toml -n test_medium_sprites
+
+# -- Target feature --
+DefaultChance            = 100
+NoOfMediumSpriteLayers   = 2
+NoOfMediumSpriteElements = 5
+
+# -- Everything else suppressed --
+NebulaChance                = 0
+CosmicLatteBackgroundChance = 0
+SpecialChance               = 0
+NoOfSmallSpriteLayers       = 0
+NoOfLargeSpriteLayers       = 0
+NoOfSpecialSpriteLayers     = 0

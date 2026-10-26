@@ -1,0 +1,13 @@
+# only_nebula.toml
+# Isolates nebula generation. All other visual elements are suppressed.
+#
+# Usage:
+#   go run ./cmd/cli -c tests/only_nebula.toml -n test_nebula
+
+# -- Target feature --
+NebulaChance = 100
+
+# -- Everything else suppressed --
+CosmicLatteBackgroundChance = 0
+DefaultChance               = 0
+SpecialChance               = 0
