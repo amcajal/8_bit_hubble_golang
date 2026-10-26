@@ -23,6 +23,8 @@ type InputParameters struct {
 	ConfigFile     string
 	Animated       bool
 	Paletted       bool
+	Width          int
+	Height         int
 }
 
 var InputParams = InputParameters{}
@@ -67,6 +69,12 @@ func CheckParams() error {
 	fs.BoolVar(&InputParams.Paletted, "p", false, "")
 	fs.BoolVar(&InputParams.Paletted, "paletted", false, "")
 
+	fs.IntVar(&InputParams.Width, "W", 500, "")
+	fs.IntVar(&InputParams.Width, "width", 500, "")
+
+	fs.IntVar(&InputParams.Height, "H", 500, "")
+	fs.IntVar(&InputParams.Height, "height", 500, "")
+
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		return err
 	}
@@ -86,13 +94,15 @@ func CheckParams() error {
 
 // CheckParamsDirect populates InputParams directly from the values supplied by
 // the GUI, skipping os.Args entirely. Safe to call any number of times.
-func CheckParamsDirect(outputDir, fileName, configFile string, seed int64, animated, paletted bool) error {
+func CheckParamsDirect(outputDir, fileName, configFile string, seed int64, animated, paletted bool, width, height int) error {
 	InputParams.OutputDir = outputDir
 	InputParams.OutputFileName = fileName
 	InputParams.Seed = seed
 	InputParams.ConfigFile = configFile
 	InputParams.Animated = animated
 	InputParams.Paletted = paletted
+	InputParams.Width = width
+	InputParams.Height = height
 
 	if paramError := checkOutputDir(); paramError != nil {
 		return paramError
@@ -130,6 +140,12 @@ OPTIONS:
 
     -c, --config    <path>   Path to a TOML config file to override RNG
                              parameters such as sprite counts and chances.
+
+    -W, --width     <int>    Width of the output image in pixels.
+                             (default: 500)
+
+    -H, --height    <int>    Height of the output image in pixels.
+                             (default: 500)
 
     -a, --animated           Generate a WebP animated file instead of a static
                              PNG. Sprites blink by cycling through opacity

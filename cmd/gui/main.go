@@ -95,13 +95,13 @@ type appState struct {
 	seedEditor         widget.Editor
 
 	// ── Advanced options (collapsed by default) ───────────────────────────
-	advancedDiscloser  component.DiscloserState // collapse / expand controller
-	configFileEditor   widget.Editor            // -c / --config
+	advancedDiscloser   component.DiscloserState // collapse / expand controller
+	configFileEditor    widget.Editor            // -c / --config
 	configFileBrowseBtn widget.Clickable
-	animatedCheck      widget.Bool              // -a / --animated
-	palettedCheck      widget.Bool              // -p / --paletted
-	animatedTip        component.TipArea        // hover tooltip for animated
-	palettedTip        component.TipArea        // hover tooltip for paletted
+	animatedCheck       widget.Bool       // -a / --animated
+	palettedCheck       widget.Bool       // -p / --paletted
+	animatedTip         component.TipArea // hover tooltip for animated
+	palettedTip         component.TipArea // hover tooltip for paletted
 
 	// ── Buttons ───────────────────────────────────────────────────────────
 	generateBtn  widget.Clickable
@@ -110,9 +110,9 @@ type appState struct {
 	closeOverlay widget.Clickable
 
 	// ── OS file/folder picker ─────────────────────────────────────────────
-	exp         *explorer.Explorer     // one instance per window
-	pickerCh    chan pickerResult       // goroutines send results here
-	pickerBusy  bool                   // only one dialog at a time
+	exp        *explorer.Explorer // one instance per window
+	pickerCh   chan pickerResult  // goroutines send results here
+	pickerBusy bool               // only one dialog at a time
 
 	// ── Scrollers ─────────────────────────────────────────────────────────
 	mainList  widget.List // scrolls the entire main-window content
@@ -298,6 +298,7 @@ func (s *appState) handleGenerate(w *app.Window) {
 		seed,
 		s.animatedCheck.Value,
 		s.palettedCheck.Value,
+		500, 500,
 	); err != nil {
 		s.statusMsg = fmt.Sprintf("Parameter error: %v", err)
 		return

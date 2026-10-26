@@ -17,9 +17,8 @@ import (
 	"github.com/amcajal/bild_modfor8bhg/noise"
 )
 
-// Fixed dimensions of the output image
-const dim_x int = 500 // width
-const dim_y int = 500 // height
+func dim_x() int { return param.InputParams.Width }
+func dim_y() int { return param.InputParams.Height }
 
 func GenerateGalaxy() error {
 	if param.InputParams.Animated {
@@ -38,7 +37,7 @@ func paintForeground(canvas *image.NRGBA) {
 }
 
 func GenerateSingleImage() image.Image {
-	canvas := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
+	canvas := image.NewNRGBA(image.Rect(0, 0, dim_x(), dim_y()))
 	noise.SetRandSource(rngm.GetRand())
 	paintBackground(canvas, buildBackground())
 	paintForeground(canvas)
@@ -54,7 +53,7 @@ func GenerateFrames() []image.Image {
 
 	sprites.InitOpacityIndexes()
 	for i := 0; i < noOfFrames; i++ {
-		frame := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
+		frame := image.NewNRGBA(image.Rect(0, 0, dim_x(), dim_y()))
 		paintBackground(frame, bg)
 		paintForeground(frame)
 		images[i] = frame
@@ -64,7 +63,7 @@ func GenerateFrames() []image.Image {
 }
 
 func buildBackground() image.Image {
-	bg := image.NewNRGBA(image.Rect(0, 0, dim_x, dim_y))
+	bg := image.NewNRGBA(image.Rect(0, 0, dim_x(), dim_y()))
 	black := color.RGBA{0, 0, 0, 255}
 	draw.Draw(bg, bg.Bounds(), &image.Uniform{black}, image.Point{}, draw.Src)
 
@@ -109,8 +108,8 @@ func paintSprite(frame *image.NRGBA, spriteSize sprites.Size) {
 		for e := 1; e <= elements; e++ {
 
 			// Random position (coordinates) in the image
-			x_c := rngm.Intn(dim_x)
-			y_c := rngm.Intn(dim_y)
+			x_c := rngm.Intn(dim_x())
+			y_c := rngm.Intn(dim_y())
 
 			// Draw the sprite
 			dp := image.Pt(x_c, y_c)

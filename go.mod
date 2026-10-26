@@ -7,7 +7,7 @@ require (
 	gioui.org/x v0.10.3
 	github.com/BurntSushi/toml v1.6.0
 	github.com/HugoSmits86/nativewebp v1.3.0
-	github.com/amcajal/bild_modfor8bhg v0.1.3
+	github.com/amcajal/bild_modfor8bhg v0.1.4
 )
 
 require (
