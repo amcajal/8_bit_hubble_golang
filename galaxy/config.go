@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const Version string = "v1.0.0"
+const Version string = "v1.2.0"
 
 // Config holds every parameter that controls galaxy generation.
 type Config struct {
