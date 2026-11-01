@@ -96,6 +96,8 @@ type appState struct {
 	advancedDiscloser   component.DiscloserState // collapse / expand controller
 	configFileEditor    widget.Editor            // -c / --config
 	configFileBrowseBtn widget.Clickable
+	widthEditor         widget.Editor     // -W / --width
+	heightEditor        widget.Editor     // -H / --height
 	animatedCheck       widget.Bool       // -a / --animated
 	palettedCheck       widget.Bool       // -p / --paletted
 	animatedTip         component.TipArea // hover tooltip for animated
@@ -162,10 +164,16 @@ func run(w *app.Window) error {
 	state.seedEditor.SingleLine = true
 	state.seedEditor.Filter = "0123456789"
 	state.configFileEditor.SingleLine = true
+	state.widthEditor.SingleLine = true
+	state.widthEditor.Filter = "0123456789"
+	state.heightEditor.SingleLine = true
+	state.heightEditor.Filter = "0123456789"
 
 	cwd, _ := os.Getwd()
 	state.outputDirEditor.SetText(cwd)
 	state.imgNameEditor.SetText("8bh_galaxy")
+	state.widthEditor.SetText("500")
+	state.heightEditor.SetText("500")
 
 	// Load logo
 	state.logoImage = loadEmbeddedPNG("assets/logo.png")
@@ -289,6 +297,22 @@ func (s *appState) handleGenerate(w *app.Window) {
 		seed = time.Now().Unix()
 	}
 
+	// Parse width and height — default to 500 when blank or invalid.
+	width := 500
+	if w := s.widthEditor.Text(); w != "" {
+		if _, err := fmt.Sscanf(w, "%d", &width); err != nil || width <= 0 {
+			s.statusMsg = "Error: width must be a positive integer."
+			return
+		}
+	}
+	height := 500
+	if h := s.heightEditor.Text(); h != "" {
+		if _, err := fmt.Sscanf(h, "%d", &height); err != nil || height <= 0 {
+			s.statusMsg = "Error: height must be a positive integer."
+			return
+		}
+	}
+
 	if err := galaxy.GenerateToFile(galaxy.Config{
 		OutputDir:      outputDir,
 		OutputFileName: imgName,
@@ -296,8 +320,8 @@ func (s *appState) handleGenerate(w *app.Window) {
 		Seed:           seed,
 		Animated:       s.animatedCheck.Value,
 		Paletted:       s.palettedCheck.Value,
-		Width:          500,
-		Height:         500,
+		Width:          width,
+		Height:         height,
 	}); err != nil {
 		s.statusMsg = fmt.Sprintf("Generation error: %v", err)
 		return
@@ -468,6 +492,33 @@ func drawAdvancedOptions(gtx layout.Context, th *material.Theme, s *appState) la
 						layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 							return drawPathField(gtx, th, &s.configFileEditor, "path/to/config.toml",
 								&s.configFileBrowseBtn, s.pickerBusy)
+						}),
+
+						layout.Rigid(vspacer(10)),
+
+						// Width / Height side by side
+						layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+							return layout.Flex{Axis: layout.Horizontal, Spacing: layout.SpaceBetween}.Layout(gtx,
+								layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+									return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+										layout.Rigid(boldLabel(th, "Width (px):")),
+										layout.Rigid(vspacer(4)),
+										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+											return drawEditor(gtx, th, &s.widthEditor, "e.g. 500")
+										}),
+									)
+								}),
+								layout.Rigid(layout.Spacer{Width: unit.Dp(12)}.Layout),
+								layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+									return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+										layout.Rigid(boldLabel(th, "Height (px):")),
+										layout.Rigid(vspacer(4)),
+										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+											return drawEditor(gtx, th, &s.heightEditor, "e.g. 500")
+										}),
+									)
+								}),
+							)
 						}),
 
 						layout.Rigid(vspacer(10)),
