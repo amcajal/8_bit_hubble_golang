@@ -5,7 +5,6 @@ import (
 	"image/color"
 	"image/draw"
 
-	"github.com/amcajal/8_bit_hubble_golang/internal/param"
 	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
 	"github.com/amcajal/bild_modfor8bhg/adjust"
 	"github.com/amcajal/bild_modfor8bhg/blend"
@@ -21,8 +20,7 @@ func blackToTransparent(img image.Image) *image.RGBA {
 	})
 }
 
-func GetCosmicLatteBackground() image.Image {
-	w, h := param.InputParams.Width, param.InputParams.Height
+func GetCosmicLatteBackground(w, h int) image.Image {
 	cosmic_latte := color.RGBA{R: 255, G: 248, B: 231, A: 255}
 	aux_img := image.NewRGBA(image.Rect(0, 0, w, h))
 	draw.Draw(aux_img, aux_img.Bounds(), &image.Uniform{cosmic_latte}, image.Point{}, draw.Src)
@@ -37,8 +35,7 @@ func GetCosmicLatteBackground() image.Image {
 	return stars_background
 }
 
-func GenerateColoredPerlinNoise(baseColor *color.RGBA) image.Image {
-	w, h := param.InputParams.Width, param.InputParams.Height
+func GenerateColoredPerlinNoise(w, h int, baseColor *color.RGBA) image.Image {
 	color_to_use := color.RGBA{R: 255, G: 248, B: 231, A: 255} // Cosmic Latte
 	if baseColor != nil {
 		color_to_use = *baseColor
@@ -51,8 +48,8 @@ func GenerateColoredPerlinNoise(baseColor *color.RGBA) image.Image {
 	return blend.Multiply(perlin, img)
 }
 
-func GenerateNebula() image.Image {
-	nebula := GenerateColoredPerlinNoise(nil)
+func GenerateNebula(w, h int) image.Image {
+	nebula := GenerateColoredPerlinNoise(w, h, nil)
 
 	for i := 0; i < rngm.Intn(3)+1; i++ {
 		aux_color := color.RGBA{
@@ -61,7 +58,7 @@ func GenerateNebula() image.Image {
 			B: uint8(rngm.Intn(256)),
 			A: 255,
 		}
-		aux_nebula := GenerateColoredPerlinNoise(&aux_color)
+		aux_nebula := GenerateColoredPerlinNoise(w, h, &aux_color)
 		nebula = blend.Overlay(nebula, aux_nebula)
 	}
 	return nebula

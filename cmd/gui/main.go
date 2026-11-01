@@ -23,18 +23,16 @@ import (
 	"gioui.org/x/component"
 	"gioui.org/x/explorer"
 
-	"github.com/amcajal/8_bit_hubble_golang/internal/galaxy"
-	"github.com/amcajal/8_bit_hubble_golang/internal/param"
-	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
+	"github.com/amcajal/8_bit_hubble_golang/galaxy"
 )
 
 //go:embed assets/logo.png
 var assetsFS embed.FS
 
-const appAbout = `8-Bit Hubble — Golang Version
+var appAbout = `8-Bit Hubble — Golang Version
 Generate random pixel-art galaxy images!
 
-Version: v1.0.0
+Version: ` + galaxy.Version + `
 Repository: https://github.com/amcajal/8_bit_hubble_golang
 
 Original C project: https://github.com/amcajal/8_bit_hubble
@@ -291,31 +289,30 @@ func (s *appState) handleGenerate(w *app.Window) {
 		seed = time.Now().Unix()
 	}
 
-	if err := param.CheckParamsDirect(
-		outputDir,
-		imgName,
-		s.configFileEditor.Text(),
-		seed,
-		s.animatedCheck.Value,
-		s.palettedCheck.Value,
-		500, 500,
-	); err != nil {
-		s.statusMsg = fmt.Sprintf("Parameter error: %v", err)
-		return
-	}
-
-	rngm.LoadSeed(param.InputParams.Seed)
-
-	if err := galaxy.GenerateGalaxy(); err != nil {
+	if err := galaxy.GenerateToFile(galaxy.Config{
+		OutputDir:      outputDir,
+		OutputFileName: imgName,
+		ConfigFile:     s.configFileEditor.Text(),
+		Seed:           seed,
+		Animated:       s.animatedCheck.Value,
+		Paletted:       s.palettedCheck.Value,
+		Width:          500,
+		Height:         500,
+	}); err != nil {
 		s.statusMsg = fmt.Sprintf("Generation error: %v", err)
 		return
 	}
 
-	s.statusMsg = fmt.Sprintf("Galaxy generated! Seed: %d", param.InputParams.Seed)
-	s.resultSeed = param.InputParams.Seed
+	s.statusMsg = fmt.Sprintf("Galaxy generated! Seed: %d", seed)
+	s.resultSeed = seed
 
 	// Load the generated image for the result overlay
-	fullPath := outputDir + "/" + param.InputParams.OutputFileName
+	fullPath := outputDir + "/" + imgName
+	if s.animatedCheck.Value {
+		fullPath += ".webp"
+	} else {
+		fullPath += ".png"
+	}
 	f, err := os.Open(fullPath)
 	if err == nil {
 		defer f.Close()

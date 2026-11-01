@@ -17,6 +17,7 @@ The program is delivered as:
 |-------------|------|
 | `cmd/gui` | Desktop UI ([Gio](https://gioui.org/)): output path, filename, seed, optional TOML config, animated WebP, and paletted PNG |
 | `cmd/cli` | Same generator from the command line (`-o`, `-n`, `-s`, `-c`, `-a`, `-p`) |
+| `hubble` | **Public Go API** — `Generate` (in memory) and `GenerateToFile` for other modules |
 
 Output is a **500×500** image by default: static **PNG**, optionally **256-colour paletted** PNG, or **animated WebP** when blinking stars are enabled.
 
@@ -72,7 +73,7 @@ This repository is **not** a line-for-line port. It preserves the **procedural g
 - **Pure Go** build (`go build` / `go run`); no C toolchain, GTK, or Python sprite conversion step.
 - **Sprites as ordinary PNG files** under `internal/sprites/assets/`, embedded at compile time—create art in any editor, add the file, register it in `static.go`.
 - **Tests** in packages such as `internal/palette`.
-- Layout centred on `internal/` (`galaxy`, `sprites`, `param`, `rngm`, `palette`).
+- Layout: `cmd/` (binaries), `hubble/` (public API), `internal/` (`galaxy`, `sprites`, `param`, `rngm`, `palette`).
 
 Historical note: early experiments in this repo used base64-in-source or remote PNG fetching for sprites; the current design uses **`go:embed`** on PNG assets, which keeps authoring simple and avoids libpng.
 
@@ -115,6 +116,19 @@ Build standalone binaries:
 go build -o 8bHubbleGolang ./cmd/cli
 go build -o 8bHubbleGolang-gui ./cmd/gui
 ```
+
+### Go library
+
+```go
+import "github.com/amcajal/8_bit_hubble_golang/hubble"
+
+img, err := hubble.Generate(hubble.Options{
+    Width: 1000, Height: 500, Seed: 42,
+})
+// err := hubble.GenerateToFile(hubble.Options{ ... OutputDir, OutputFileName, ... })
+```
+
+Implementation details live under `internal/`; only `hubble` is the supported import path for other modules.
 
 ---
 
