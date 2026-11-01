@@ -59,15 +59,15 @@ go build -o 8bHubbleGolang-gui ./cmd/gui
 ### Go library
 
 ```go
-import "github.com/amcajal/8_bit_hubble_golang/hubble"
+import "github.com/amcajal/8_bit_hubble_golang/galaxy"
 
-img, err := hubble.Generate(hubble.Options{
+img, err := galaxy.GenerateImage(galaxy.Config{
     Width: 1000, Height: 500, Seed: 42,
 })
-// err := hubble.GenerateToFile(hubble.Options{ ... OutputDir, OutputFileName, ... })
+// err := galaxy.GenerateToFile(galaxy.Config{ ... OutputDir, OutputFileName, ... })
 ```
 
-Implementation details live under `internal/`; only `hubble` is the supported import path for other modules.
+Implementation details live under `internal/`; only `galaxy` is the supported import path for other modules.
 
 ---
 
