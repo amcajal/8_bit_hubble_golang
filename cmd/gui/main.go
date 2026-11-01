@@ -23,18 +23,16 @@ import (
 	"gioui.org/x/component"
 	"gioui.org/x/explorer"
 
-	"github.com/amcajal/8_bit_hubble_golang/internal/galaxy"
-	"github.com/amcajal/8_bit_hubble_golang/internal/param"
-	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
+	"github.com/amcajal/8_bit_hubble_golang/galaxy"
 )
 
 //go:embed assets/logo.png
 var assetsFS embed.FS
 
-const appAbout = `8-Bit Hubble — Golang Version
+var appAbout = `8-Bit Hubble — Golang Version
 Generate random pixel-art galaxy images!
 
-Version: v1.0.0
+Version: ` + galaxy.Version + `
 Repository: https://github.com/amcajal/8_bit_hubble_golang
 
 Original C project: https://github.com/amcajal/8_bit_hubble
@@ -98,6 +96,8 @@ type appState struct {
 	advancedDiscloser   component.DiscloserState // collapse / expand controller
 	configFileEditor    widget.Editor            // -c / --config
 	configFileBrowseBtn widget.Clickable
+	widthEditor         widget.Editor     // -W / --width
+	heightEditor        widget.Editor     // -H / --height
 	animatedCheck       widget.Bool       // -a / --animated
 	palettedCheck       widget.Bool       // -p / --paletted
 	animatedTip         component.TipArea // hover tooltip for animated
@@ -164,10 +164,16 @@ func run(w *app.Window) error {
 	state.seedEditor.SingleLine = true
 	state.seedEditor.Filter = "0123456789"
 	state.configFileEditor.SingleLine = true
+	state.widthEditor.SingleLine = true
+	state.widthEditor.Filter = "0123456789"
+	state.heightEditor.SingleLine = true
+	state.heightEditor.Filter = "0123456789"
 
 	cwd, _ := os.Getwd()
 	state.outputDirEditor.SetText(cwd)
 	state.imgNameEditor.SetText("8bh_galaxy")
+	state.widthEditor.SetText("500")
+	state.heightEditor.SetText("500")
 
 	// Load logo
 	state.logoImage = loadEmbeddedPNG("assets/logo.png")
@@ -291,31 +297,46 @@ func (s *appState) handleGenerate(w *app.Window) {
 		seed = time.Now().Unix()
 	}
 
-	if err := param.CheckParamsDirect(
-		outputDir,
-		imgName,
-		s.configFileEditor.Text(),
-		seed,
-		s.animatedCheck.Value,
-		s.palettedCheck.Value,
-		500, 500,
-	); err != nil {
-		s.statusMsg = fmt.Sprintf("Parameter error: %v", err)
-		return
+	// Parse width and height — default to 500 when blank or invalid.
+	width := 500
+	if w := s.widthEditor.Text(); w != "" {
+		if _, err := fmt.Sscanf(w, "%d", &width); err != nil || width <= 0 {
+			s.statusMsg = "Error: width must be a positive integer."
+			return
+		}
+	}
+	height := 500
+	if h := s.heightEditor.Text(); h != "" {
+		if _, err := fmt.Sscanf(h, "%d", &height); err != nil || height <= 0 {
+			s.statusMsg = "Error: height must be a positive integer."
+			return
+		}
 	}
 
-	rngm.LoadSeed(param.InputParams.Seed)
-
-	if err := galaxy.GenerateGalaxy(); err != nil {
+	if err := galaxy.GenerateToFile(galaxy.Config{
+		OutputDir:      outputDir,
+		OutputFileName: imgName,
+		ConfigFile:     s.configFileEditor.Text(),
+		Seed:           seed,
+		Animated:       s.animatedCheck.Value,
+		Paletted:       s.palettedCheck.Value,
+		Width:          width,
+		Height:         height,
+	}); err != nil {
 		s.statusMsg = fmt.Sprintf("Generation error: %v", err)
 		return
 	}
 
-	s.statusMsg = fmt.Sprintf("Galaxy generated! Seed: %d", param.InputParams.Seed)
-	s.resultSeed = param.InputParams.Seed
+	s.statusMsg = fmt.Sprintf("Galaxy generated! Seed: %d", seed)
+	s.resultSeed = seed
 
 	// Load the generated image for the result overlay
-	fullPath := outputDir + "/" + param.InputParams.OutputFileName
+	fullPath := outputDir + "/" + imgName
+	if s.animatedCheck.Value {
+		fullPath += ".webp"
+	} else {
+		fullPath += ".png"
+	}
 	f, err := os.Open(fullPath)
 	if err == nil {
 		defer f.Close()
@@ -471,6 +492,33 @@ func drawAdvancedOptions(gtx layout.Context, th *material.Theme, s *appState) la
 						layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 							return drawPathField(gtx, th, &s.configFileEditor, "path/to/config.toml",
 								&s.configFileBrowseBtn, s.pickerBusy)
+						}),
+
+						layout.Rigid(vspacer(10)),
+
+						// Width / Height side by side
+						layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+							return layout.Flex{Axis: layout.Horizontal, Spacing: layout.SpaceBetween}.Layout(gtx,
+								layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+									return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+										layout.Rigid(boldLabel(th, "Width (px):")),
+										layout.Rigid(vspacer(4)),
+										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+											return drawEditor(gtx, th, &s.widthEditor, "e.g. 500")
+										}),
+									)
+								}),
+								layout.Rigid(layout.Spacer{Width: unit.Dp(12)}.Layout),
+								layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+									return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+										layout.Rigid(boldLabel(th, "Height (px):")),
+										layout.Rigid(vspacer(4)),
+										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+											return drawEditor(gtx, th, &s.heightEditor, "e.g. 500")
+										}),
+									)
+								}),
+							)
 						}),
 
 						layout.Rigid(vspacer(10)),

@@ -8,7 +8,6 @@ import (
 	"github.com/amcajal/bild_modfor8bhg/transform"
 
 	hubble_palette "github.com/amcajal/8_bit_hubble_golang/internal/palette"
-	"github.com/amcajal/8_bit_hubble_golang/internal/param"
 	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
 )
 
@@ -87,7 +86,7 @@ func ShouldPaintSprite(spriteSize Size) bool {
 	}
 	return rngm.Intn(100) <= chance
 }
-func GetSprite(spriteSize Size) image.Image {
+func GetSprite(spriteSize Size, animated bool) image.Image {
 	var pool []Sprite
 
 	switch spriteSize {
@@ -109,7 +108,7 @@ func GetSprite(spriteSize Size) image.Image {
 	img = rotateSprite(img, spriteSize)
 	img = colorizeSprite(img, rngm.Intn(361))
 
-	if param.InputParams.Animated {
+	if animated {
 		img = BlinkSprite(img, entry)
 	}
 

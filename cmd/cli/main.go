@@ -2,26 +2,24 @@ package main
 
 import (
 	"log"
+	"os"
 
-	"github.com/amcajal/8_bit_hubble_golang/internal/galaxy"
-	"github.com/amcajal/8_bit_hubble_golang/internal/param"
-	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
+	"github.com/amcajal/8_bit_hubble_golang/galaxy"
 )
 
 func main() {
-
-	// Check parameters are correct
-	if err := param.CheckParams(); err != nil {
+	cfg, err := galaxy.ConfigFromArgs(os.Args)
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Initialize seeded random source (enables deterministic output via -s flag)
-	rngm.LoadSeed(param.InputParams.Seed)
-
-	// Generate galaxy
-	if err := galaxy.GenerateGalaxy(); err != nil {
+	if err := cfg.Validate(); err != nil {
 		log.Fatal(err)
 	}
 
-	log.Printf("Galaxy Generated! Seed: %d", param.InputParams.Seed)
+	if err := galaxy.GenerateToFile(cfg); err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("Galaxy Generated! Seed: %d", cfg.Seed)
 }
