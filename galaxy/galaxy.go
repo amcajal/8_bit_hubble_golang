@@ -141,9 +141,13 @@ func paintSprite(frame *image.NRGBA, spriteSize sprites.Size, cfg Config) {
 		elements := sprites.GetNoOfElements(spriteSize)
 		img := sprites.GetSprite(spriteSize, cfg.Animated)
 		sb := img.Bounds()
+		// To avoid sprites being painted off the edge of the canvas
+		width_limit := cfg.Width - sb.Max.X
+		// Only width is controled, so images in "infinite scroll" mode
+		// can be scrolled horizontally without being cut off.
 
 		for e := 1; e <= elements; e++ {
-			x_c := rngm.Intn(cfg.Width)
+			x_c := rngm.Intn(width_limit) + 1
 			y_c := rngm.Intn(cfg.Height)
 			dp := image.Pt(x_c, y_c)
 			r := image.Rectangle{dp, dp.Add(sb.Size())}
