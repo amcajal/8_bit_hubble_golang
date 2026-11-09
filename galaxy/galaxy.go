@@ -38,7 +38,24 @@ func ApplyConfig(cfg RenderConfig) error {
 	return nil
 }
 
-func RenderFrames(cfg RenderConfig) []image.Image {
+// GalaxyData is the value returned by RenderFrames. It always contains the
+// fully composited frames in Frames. When RenderConfig.RetainLayers is true,
+// Layers[i] holds the individual compositing layers for Frames[i], in order:
+//
+//	[0] background (black fill + optional nebula/cosmic-latte)
+//	[1] small sprites
+//	[2] medium sprites
+//	[3] large sprites
+//	[4] special sprites
+//
+// Compositing Layers[i][0] through Layers[i][4] in order exactly reconstructs
+// Frames[i]. When RetainLayers is false, Layers is nil.
+type GalaxyData struct {
+	Frames []image.Image
+	Layers [][]image.Image
+}
+
+func RenderFrames(cfg RenderConfig) GalaxyData {
 	render.SetNoiseSource()
 	bg := render.BuildBackground(cfg.Width, cfg.Height)
 
@@ -48,15 +65,31 @@ func RenderFrames(cfg RenderConfig) []image.Image {
 		sprites.InitOpacityIndexes()
 	}
 
-	images := make([]image.Image, noOfFrames)
+	data := GalaxyData{
+		Frames: make([]image.Image, noOfFrames),
+	}
+	if cfg.RetainLayers {
+		data.Layers = make([][]image.Image, noOfFrames)
+	}
+
 	for i := 0; i < noOfFrames; i++ {
 		frame := image.NewNRGBA(image.Rect(0, 0, cfg.Width, cfg.Height))
 		render.PaintBackground(frame, bg)
-		render.PaintForeground(frame, cfg.Width, cfg.Height, cfg.Animated)
-		images[i] = frame
+		spriteLayers := render.PaintForeground(frame, cfg.Width, cfg.Height, cfg.Animated)
+		data.Frames[i] = frame
+
+		if cfg.RetainLayers {
+			// Layer 0 is the background; layers 1-4 are the sprite layers
+			// returned by PaintForeground (small, medium, large, special).
+			frameLayers := make([]image.Image, 1+len(spriteLayers))
+			frameLayers[0] = bg
+			copy(frameLayers[1:], spriteLayers)
+			data.Layers[i] = frameLayers
+		}
+
 		sprites.AdvanceOpacityIndexes()
 	}
-	return images
+	return data
 }
 
 // Generate is the all-in-one entry point for the CLI and GUI paths.
@@ -74,12 +107,12 @@ func Generate(cfg Config) error {
 	}
 	appendExtension(&cfg)
 
-	frames := RenderFrames(cfg.RenderConfig)
+	data := RenderFrames(cfg.RenderConfig)
 
 	if cfg.Animated {
-		return SaveAsWebp(cfg.OutputConfig, frames)
+		return SaveAsWebp(cfg.OutputConfig, data.Frames)
 	}
-	return SaveAsPng(cfg.OutputConfig, frames[0])
+	return SaveAsPng(cfg.OutputConfig, data.Frames[0])
 }
 
 func SaveAsPng(cfg OutputConfig, frame image.Image) error {
