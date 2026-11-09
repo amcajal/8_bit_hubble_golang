@@ -17,7 +17,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := galaxy.GenerateToFile(cfg); err != nil {
+	if err := galaxy.Generate(cfg); err != nil {
 		log.Fatal(err)
 	}
 

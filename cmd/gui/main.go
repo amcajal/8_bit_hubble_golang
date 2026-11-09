@@ -313,15 +313,19 @@ func (s *appState) handleGenerate(w *app.Window) {
 		}
 	}
 
-	if err := galaxy.GenerateToFile(galaxy.Config{
-		OutputDir:      outputDir,
-		OutputFileName: imgName,
-		ConfigFile:     s.configFileEditor.Text(),
-		Seed:           seed,
-		Animated:       s.animatedCheck.Value,
-		Paletted:       s.palettedCheck.Value,
-		Width:          width,
-		Height:         height,
+	if err := galaxy.Generate(galaxy.Config{
+		RenderConfig: galaxy.RenderConfig{
+			Width:         width,
+			Height:        height,
+			Seed:          seed,
+			Animated:      s.animatedCheck.Value,
+			RNGConfigFile: s.configFileEditor.Text(),
+		},
+		OutputConfig: galaxy.OutputConfig{
+			OutputDir:      outputDir,
+			OutputFileName: imgName,
+			Paletted:       s.palettedCheck.Value,
+		},
 	}); err != nil {
 		s.statusMsg = fmt.Sprintf("Generation error: %v", err)
 		return
