@@ -19,15 +19,11 @@ import (
 const pngExt string = ".png"
 const webpExt string = ".webp"
 
-// ApplyConfig seeds the RNG with cfg.Seed and, when cfg.RNGConfigFile is
-// non-empty, loads the TOML file that overrides sprite probability parameters.
+// ApplyConfig seeds the RNG and, when RenderConfig.RNGConfigFile is set,
+// loads the TOML override file.
 //
-// Library consumers MUST call ApplyConfig before RenderFrames. Without it the
-// RNG is in an undefined state and cfg.Seed is silently ignored, producing
-// non-deterministic output.
-//
-// Generate calls ApplyConfig automatically; CLI/GUI callers do not need to
-// call it directly.
+// Must be called before RenderFrames. Without it, Seed is ignored and output
+// is non-deterministic. Function "Generate" calls this automatically.
 func ApplyConfig(cfg RenderConfig) error {
 	if cfg.RNGConfigFile != "" {
 		if err := rngm.LoadConfig(cfg.RNGConfigFile); err != nil {
@@ -38,23 +34,33 @@ func ApplyConfig(cfg RenderConfig) error {
 	return nil
 }
 
-// GalaxyData is the value returned by RenderFrames. It always contains the
-// fully composited frames in Frames. When RenderConfig.RetainLayers is true,
-// Layers[i] holds the individual compositing layers for Frames[i], in order:
+// GalaxyData is returned by RenderFrames.
 //
-//	[0] background (black fill + optional nebula/cosmic-latte)
+// Frames always contains the fully composited images.
+// When RenderConfig.RetainLayers is true, Layers[i] holds the individual
+// compositing layers for Frames[i], in order:
+//
+//	[0] background (black + optional nebula / cosmic-latte)
 //	[1] small sprites
 //	[2] medium sprites
 //	[3] large sprites
 //	[4] special sprites
 //
-// Compositing Layers[i][0] through Layers[i][4] in order exactly reconstructs
-// Frames[i]. When RetainLayers is false, Layers is nil.
+// Compositing Layers[i][0..4] in order exactly reconstructs Frames[i].
+// Layers is nil when RetainLayers is false.
 type GalaxyData struct {
 	Frames []image.Image
 	Layers [][]image.Image
 }
 
+// RenderFrames generates the galaxy image data in memory.
+//
+//   - Animated=false -> GalaxyData.Frames has one image (use with SaveAsPng).
+//   - Animated=true  -> GalaxyData.Frames has the full WebP frame sequence (use with SaveAsWebp).
+//   - RetainLayers=true -> GalaxyData.Layers is populated (see GalaxyData).
+//
+// The background is built once and reused across all frames.
+// Call ApplyConfig before this function.
 func RenderFrames(cfg RenderConfig) GalaxyData {
 	render.SetNoiseSource()
 	bg := render.BuildBackground(cfg.Width, cfg.Height)
@@ -79,8 +85,6 @@ func RenderFrames(cfg RenderConfig) GalaxyData {
 		data.Frames[i] = frame
 
 		if cfg.RetainLayers {
-			// Layer 0 is the background; layers 1-4 are the sprite layers
-			// returned by PaintForeground (small, medium, large, special).
 			frameLayers := make([]image.Image, 1+len(spriteLayers))
 			frameLayers[0] = bg
 			copy(frameLayers[1:], spriteLayers)
@@ -92,9 +96,9 @@ func RenderFrames(cfg RenderConfig) GalaxyData {
 	return data
 }
 
-// Generate is the all-in-one entry point for the CLI and GUI paths.
-// It validates the config, seeds the RNG, renders the frames, and writes the
-// result to disk as a PNG (static) or WebP (animated).
+// Generate is the single entry point for CLI and GUI usage.
+// It validates the config, seeds the RNG, renders the frames, and saves the
+// result to disk as PNG (static) or WebP (animated).
 //
 // Library consumers should use ApplyConfig + RenderFrames + SaveAsPng /
 // SaveAsWebp directly for finer control.
@@ -115,6 +119,9 @@ func Generate(cfg Config) error {
 	return SaveAsPng(cfg.OutputConfig, data.Frames[0])
 }
 
+// SaveAsPng encodes a single image as a PNG file at the path described by cfg.
+// When cfg.Paletted is true, output is converted to a 256-colour Plan 9 palette
+// with Floyd-Steinberg dithering.
 func SaveAsPng(cfg OutputConfig, frame image.Image) error {
 	writer, err := os.Create(cfg.OutputDir + "/" + cfg.OutputFileName)
 	if err != nil {
@@ -131,6 +138,8 @@ func SaveAsPng(cfg OutputConfig, frame image.Image) error {
 	return png.Encode(writer, outputImage)
 }
 
+// SaveAsWebp encodes a slice of images as an animated WebP file at the path
+// described by cfg. Use the slice from GalaxyData.Frames when Animated is true.
 func SaveAsWebp(cfg OutputConfig, images []image.Image) error {
 	writer, err := os.Create(cfg.OutputDir + "/" + cfg.OutputFileName)
 	if err != nil {
@@ -155,6 +164,8 @@ func SaveAsWebp(cfg OutputConfig, images []image.Image) error {
 	return nativewebp.EncodeAll(writer, &ani, nil)
 }
 
+// appendExtension appends the correct file extension to cfg.OutputFileName
+// if not already present.
 func appendExtension(cfg *Config) {
 	if cfg.Animated {
 		if !strings.HasSuffix(cfg.OutputFileName, webpExt) {

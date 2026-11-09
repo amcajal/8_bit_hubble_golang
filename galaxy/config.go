@@ -9,55 +9,48 @@ import (
 
 const Version string = "v2.0.0"
 
-// RenderConfig holds the parameters that control image generation.
-// Pass this to ApplyConfig (to seed the RNG) and then to RenderFrames.
-//
-// Library consumers are responsible for populating this struct correctly and
-// for calling ApplyConfig before RenderFrames — see those functions for details.
+// RenderConfig controls image generation. Pass it to ApplyConfig first, then
+// to RenderFrames.
 type RenderConfig struct {
 	Width  int
 	Height int
-	Seed   int64
+	Seed   int64 // Same seed always produces the same image.
 
-	// Animated controls whether RenderFrames produces a single frame (false)
-	// or the full sequence of frames required for an animated WebP (true).
+	// Animated: false -> single PNG frame; true -> full WebP animation sequence.
 	Animated bool
 
-	// RNGConfigFile is an optional path to a TOML file that overrides sprite
-	// probability parameters. Leave empty to use built-in defaults.
-	// Note: RNGConfigFile is loaded by ApplyConfig, not by RenderFrames.
+	// RNGConfigFile is an optional TOML file that overrides sprite probability
+	// parameters. Leave empty to use built-in defaults.
+	// Loaded by ApplyConfig, not by RenderFrames.
 	RNGConfigFile string
 
-	// RetainLayers instructs RenderFrames to populate GalaxyData.Layers with
-	// the individual compositing layers for each frame (background, small
-	// sprites, medium sprites, large sprites, special sprites).
-	//
-	// This is intended for library consumers who need per-layer access, e.g.
-	// for parallax scrolling in 2D game engines. It is NOT exposed through the
-	// CLI or GUI because it can consume significant memory for large or
-	// animated outputs.
+	// RetainLayers populates GalaxyData.Layers with the individual compositing
+	// layers for each frame, useful for parallax scrolling in game engines.
+	// Not available through the CLI or GUI — can consume significant memory.
 	RetainLayers bool
 }
 
-// OutputConfig holds the parameters that control how a generated image is
-// written to disk. Pass this to SaveAsPng or SaveAsWebp.
+// OutputConfig controls how generated images are written to disk.
+// Pass it to SaveAsPng or SaveAsWebp.
 type OutputConfig struct {
 	OutputDir      string
 	OutputFileName string
 
-	// Paletted restricts PNG output to 256 colours from the Plan 9 palette
-	// using Floyd-Steinberg dithering. Ignored by SaveAsWebp.
+	// Paletted restricts PNG output to 256 colours (Plan 9 palette,
+	// Floyd-Steinberg dithering). Ignored by SaveAsWebp.
 	Paletted bool
 }
 
+// Config is the all-in-one configuration used by the CLI and GUI.
+// It embeds RenderConfig and OutputConfig. Library consumers should prefer
+// working with the two sub-structs directly.
 type Config struct {
 	RenderConfig
 	OutputConfig
 }
 
-// Validate checks that the Config is consistent and that referenced paths
-// exist and are accessible. It is called automatically by Generate; library
-// consumers using RenderFrames directly may call it themselves if desired.
+// Validate checks that the Config fields are consistent and that all
+// referenced paths exist and are accessible. Called automatically by Generate.
 func (c Config) Validate() error {
 	if c.Width <= 0 || c.Height <= 0 {
 		return fmt.Errorf("width and height must be positive (got %dx%d)", c.Width, c.Height)

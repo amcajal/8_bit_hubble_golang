@@ -1,16 +1,15 @@
 
-
 ![project_logo](https://github.com/amcajal/8_bit_hubble_golang/blob/master/cmd/gui/assets/logo.png)
 
 **8-bit Hubble (Go)** is a complete reimplementation—and ongoing **expansion**—of the original **[8-bit Hubble](https://github.com/amcajal/8_bit_hubble)**
 
-For background on the tribute to Hubble, classic games, and the “Bob Ross” layering idea, see the [original project README](https://github.com/amcajal/8_bit_hubble) and [wiki](https://github.com/amcajal/8_bit_hubble/wiki).
+For background on the tribute to Hubble, classic games, and the "Bob Ross" layering idea, see the [original project README](https://github.com/amcajal/8_bit_hubble) and [wiki](https://github.com/amcajal/8_bit_hubble/wiki).
 
 ---
 
 ## Overview
 
-**8-bit Hubble** (Golang version) generates random **pixel-art galaxy** images (and WebP animations too), containing stars, nebulas, planets, etc. Goal: try to get random, cool-looking, SNES-alike images of our universe!
+**8-bit Hubble** (Golang version) generates random **pixel-art galaxy** images (and WebP animations), containing stars, nebulas, planets, etc. Goal: try to get random, cool-looking, SNES-alike images of our universe!
 
 Example output:
 
@@ -56,18 +55,91 @@ go build -o 8bHubbleGolang ./cmd/cli
 go build -o 8bHubbleGolang-gui ./cmd/gui
 ```
 
-### Go library
+---
+
+## Go library
+
+The `galaxy` package is the supported import path for use in third-party projects.
+
+```bash
+go get github.com/amcajal/8_bit_hubble_golang/galaxy
+```
+
+### Generate a static PNG in memory
 
 ```go
 import "github.com/amcajal/8_bit_hubble_golang/galaxy"
 
-img, err := galaxy.GenerateImage(galaxy.Config{
-    Width: 1000, Height: 500, Seed: 42,
-})
-// err := galaxy.GenerateToFile(galaxy.Config{ ... OutputDir, OutputFileName, ... })
+cfg := galaxy.RenderConfig{
+    Width:  500,
+    Height: 500,
+    Seed:   42,
+}
+
+if err := galaxy.ApplyConfig(cfg); err != nil {
+    log.Fatal(err)
+}
+
+data := galaxy.RenderFrames(cfg)
+img := data.Frames[0] // image.Image, ready to use or encode
 ```
 
-Implementation details live under `internal/`; only `galaxy` is the supported import path for other modules.
+### Save directly to disk (PNG or animated WebP)
+
+```go
+// Static PNG
+err := galaxy.Generate(galaxy.Config{
+    RenderConfig: galaxy.RenderConfig{Width: 500, Height: 500, Seed: 42},
+    OutputConfig: galaxy.OutputConfig{OutputDir: "./output", OutputFileName: "my_galaxy"},
+})
+
+// Animated WebP
+err := galaxy.Generate(galaxy.Config{
+    RenderConfig: galaxy.RenderConfig{Width: 500, Height: 500, Seed: 42, Animated: true},
+    OutputConfig: galaxy.OutputConfig{OutputDir: "./output", OutputFileName: "my_galaxy"},
+})
+```
+
+### Access individual compositing layers (e.g. for parallax scrolling)
+
+```go
+cfg := galaxy.RenderConfig{
+    Width:        500,
+    Height:       500,
+    Seed:         42,
+    RetainLayers: true,
+}
+
+if err := galaxy.ApplyConfig(cfg); err != nil {
+    log.Fatal(err)
+}
+
+data := galaxy.RenderFrames(cfg)
+
+// data.Layers[frameIndex][layerIndex]:
+//   [0] background
+//   [1] small sprites
+//   [2] medium sprites
+//   [3] large sprites
+//   [4] special sprites
+layers := data.Layers[0]
+```
+
+> **Note:** `RetainLayers` allocates one `image.Image` per layer per frame and can consume significant memory for large or animated outputs.
+
+### API summary
+
+| Symbol | Description |
+|---|---|
+| `RenderConfig` | Controls image generation (size, seed, animated, layers) |
+| `OutputConfig` | Controls file output (directory, filename, palette) |
+| `Config` | Embeds both; used by `Generate` |
+| `ApplyConfig(RenderConfig)` | Seeds the RNG — call before `RenderFrames` |
+| `RenderFrames(RenderConfig)` | Returns `GalaxyData` with frames (and optionally layers) |
+| `GalaxyData` | Holds `Frames []image.Image` and `Layers [][]image.Image` |
+| `Generate(Config)` | All-in-one: validate → seed → render → save |
+| `SaveAsPng(OutputConfig, image.Image)` | Encode and write a single PNG |
+| `SaveAsWebp(OutputConfig, []image.Image)` | Encode and write an animated WebP |
 
 ---
 
