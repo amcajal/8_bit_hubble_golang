@@ -26,7 +26,9 @@ func ConfigFromArgs(args []string) (Config, error) {
 	fs := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	fs.Usage = func() {}
 
-	cfg := Config{Seed: time.Now().Unix()}
+	cfg := Config{
+		RenderConfig: RenderConfig{Seed: time.Now().Unix()},
+	}
 
 	fs.StringVar(&cfg.OutputDir, "o", "./", "")
 	fs.StringVar(&cfg.OutputDir, "output", "./", "")
@@ -37,8 +39,8 @@ func ConfigFromArgs(args []string) (Config, error) {
 	fs.Int64Var(&cfg.Seed, "s", cfg.Seed, "")
 	fs.Int64Var(&cfg.Seed, "seed", cfg.Seed, "")
 
-	fs.StringVar(&cfg.ConfigFile, "c", "", "")
-	fs.StringVar(&cfg.ConfigFile, "config", "", "")
+	fs.StringVar(&cfg.RNGConfigFile, "c", "", "")
+	fs.StringVar(&cfg.RNGConfigFile, "config", "", "")
 
 	fs.BoolVar(&cfg.Animated, "a", false, "")
 	fs.BoolVar(&cfg.Animated, "animated", false, "")
