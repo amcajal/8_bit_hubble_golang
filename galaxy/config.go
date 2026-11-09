@@ -27,6 +27,16 @@ type RenderConfig struct {
 	// probability parameters. Leave empty to use built-in defaults.
 	// Note: RNGConfigFile is loaded by ApplyConfig, not by RenderFrames.
 	RNGConfigFile string
+
+	// RetainLayers instructs RenderFrames to populate GalaxyData.Layers with
+	// the individual compositing layers for each frame (background, small
+	// sprites, medium sprites, large sprites, special sprites).
+	//
+	// This is intended for library consumers who need per-layer access, e.g.
+	// for parallax scrolling in 2D game engines. It is NOT exposed through the
+	// CLI or GUI because it can consume significant memory for large or
+	// animated outputs.
+	RetainLayers bool
 }
 
 // OutputConfig holds the parameters that control how a generated image is

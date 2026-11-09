@@ -1,3 +1,5 @@
+// Package render contains the low-level pixel-painting primitives used by the
+// galaxy package.
 package render
 
 import (
@@ -33,21 +35,36 @@ func PaintBackground(frame *image.NRGBA, bg image.Image) {
 }
 
 // PaintForeground resets the RNG seed and paints all sprite layers onto the
-// canvas. The seed reset ensures that static and animated frames are visually
+// canvas. It returns a []image.Image containing one transparent layer per
+// sprite size (small, medium, large, special), in that order.
+//
+// Each returned layer is an independent NRGBA image: compositing layers[0]
+// through layers[3] onto a copy of bg exactly reconstructs the frame.
+//
+// The seed reset ensures that static and animated frames are visually
 // consistent with each other.
-func PaintForeground(canvas *image.NRGBA, width, height int, animated bool) {
+func PaintForeground(canvas *image.NRGBA, width, height int, animated bool) []image.Image {
 	rngm.ReloadSeed()
-	paintSprite(canvas, sprites.Small, width, height, animated)
-	paintSprite(canvas, sprites.Medium, width, height, animated)
-	paintSprite(canvas, sprites.Large, width, height, animated)
-	paintSprite(canvas, sprites.Special, width, height, animated)
+
+	layers := make([]image.Image, 4)
+	layers[0] = paintSprite(canvas, sprites.Small, width, height, animated)
+	layers[1] = paintSprite(canvas, sprites.Medium, width, height, animated)
+	layers[2] = paintSprite(canvas, sprites.Large, width, height, animated)
+	layers[3] = paintSprite(canvas, sprites.Special, width, height, animated)
+
+	return layers
 }
 
-// paintSprite paints 0–maxLayers layers, each with 0–maxSprites sprites of
-// the given size, with a configurable probability of being skipped entirely.
-func paintSprite(frame *image.NRGBA, spriteSize sprites.Size, width, height int, animated bool) {
+// paintSprite paints 0–maxLayers sprite layers of the given size onto a fresh
+// transparent canvas, composites that canvas onto frame, and returns the
+// transparent canvas as an independent layer image.
+func paintSprite(frame *image.NRGBA, spriteSize sprites.Size, width, height int, animated bool) image.Image {
+	layer := image.NewNRGBA(image.Rect(0, 0, width, height))
+	// layer is zero-initialised: all pixels are fully transparent.
+
 	if !sprites.ShouldPaintSprite(spriteSize) {
-		return
+		// Return the empty transparent layer so the index contract is kept.
+		return layer
 	}
 
 	layers := sprites.GetNoOfLayers(spriteSize)
@@ -65,9 +82,14 @@ func paintSprite(frame *image.NRGBA, spriteSize sprites.Size, width, height int,
 			yC := rngm.Intn(height)
 			dp := image.Pt(xC, yC)
 			r := image.Rectangle{dp, dp.Add(sb.Size())}
-			draw.Draw(frame, r, img, sb.Min, draw.Over)
+			draw.Draw(layer, r, img, sb.Min, draw.Over)
 		}
 	}
+
+	// Composite the layer onto the shared frame.
+	draw.Draw(frame, frame.Bounds(), layer, image.Point{}, draw.Over)
+
+	return layer
 }
 
 // SetNoiseSource wires the shared seeded RNG into the noise package.
