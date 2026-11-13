@@ -11,9 +11,9 @@ import (
 
 	"github.com/HugoSmits86/nativewebp"
 
-	"github.com/amcajal/8_bit_hubble_golang/internal/render"
-	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
-	"github.com/amcajal/8_bit_hubble_golang/internal/sprites"
+	"github.com/amcajal/8_bit_hubble_golang/v2/internal/render"
+	"github.com/amcajal/8_bit_hubble_golang/v2/internal/rngm"
+	"github.com/amcajal/8_bit_hubble_golang/v2/internal/sprites"
 )
 
 const pngExt string = ".png"

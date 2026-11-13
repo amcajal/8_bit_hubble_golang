@@ -1,4 +1,4 @@
-module github.com/amcajal/8_bit_hubble_golang
+module github.com/amcajal/8_bit_hubble_golang/v2
 
 go 1.26.5
 

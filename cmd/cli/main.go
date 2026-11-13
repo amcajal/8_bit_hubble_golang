@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/amcajal/8_bit_hubble_golang/galaxy"
+	"github.com/amcajal/8_bit_hubble_golang/v2/galaxy"
 )
 
 func main() {

@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"image/draw"
 
-	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
+	"github.com/amcajal/8_bit_hubble_golang/v2/internal/rngm"
 	"github.com/amcajal/bild_modfor8bhg/adjust"
 	"github.com/amcajal/bild_modfor8bhg/blend"
 	"github.com/amcajal/bild_modfor8bhg/noise"

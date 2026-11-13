@@ -7,8 +7,8 @@ import (
 
 	"github.com/amcajal/bild_modfor8bhg/transform"
 
-	hubble_palette "github.com/amcajal/8_bit_hubble_golang/internal/palette"
-	"github.com/amcajal/8_bit_hubble_golang/internal/rngm"
+	hubble_palette "github.com/amcajal/8_bit_hubble_golang/v2/internal/palette"
+	"github.com/amcajal/8_bit_hubble_golang/v2/internal/rngm"
 )
 
 // Name in honor of Bob Ross

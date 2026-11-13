@@ -23,7 +23,7 @@ import (
 	"gioui.org/x/component"
 	"gioui.org/x/explorer"
 
-	"github.com/amcajal/8_bit_hubble_golang/galaxy"
+	"github.com/amcajal/8_bit_hubble_golang/v2/galaxy"
 )
 
 //go:embed assets/logo.png
