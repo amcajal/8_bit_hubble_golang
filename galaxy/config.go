@@ -28,6 +28,17 @@ type RenderConfig struct {
 	// layers for each frame, useful for parallax scrolling in game engines.
 	// Not available through the CLI or GUI — can consume significant memory.
 	RetainLayers bool
+
+	// Seamless makes the generated image tile seamlessly when repeated
+	// horizontally (infinite scroll). Two changes are applied:
+	//
+	//  1. Sprites are constrained to fit entirely within the image bounds so
+	//     none are cut at the right edge (a cut sprite would not reappear at
+	//     the left edge of the next copy).
+	//  2. The nebula (if present) has its rightmost ~10% mirrored and
+	//     alpha-faded onto its left edge, creating a smooth colour blend at
+	//     the tile seam.
+	Seamless bool
 }
 
 // OutputConfig controls how generated images are written to disk.

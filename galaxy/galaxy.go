@@ -63,7 +63,7 @@ type GalaxyData struct {
 // Call ApplyConfig before this function.
 func RenderFrames(cfg RenderConfig) GalaxyData {
 	render.SetNoiseSource()
-	bg := render.BuildBackground(cfg.Width, cfg.Height)
+	bg := render.BuildBackground(cfg.Width, cfg.Height, cfg.Seamless)
 
 	noOfFrames := 1
 	if cfg.Animated {
@@ -81,7 +81,7 @@ func RenderFrames(cfg RenderConfig) GalaxyData {
 	for i := 0; i < noOfFrames; i++ {
 		frame := image.NewNRGBA(image.Rect(0, 0, cfg.Width, cfg.Height))
 		render.PaintBackground(frame, bg)
-		spriteLayers := render.PaintForeground(frame, cfg.Width, cfg.Height, cfg.Animated)
+		spriteLayers := render.PaintForeground(frame, cfg.Width, cfg.Height, cfg.Animated, cfg.Seamless)
 		data.Frames[i] = frame
 
 		if cfg.RetainLayers {

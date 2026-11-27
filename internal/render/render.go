@@ -12,13 +12,13 @@ import (
 	"github.com/amcajal/bild_modfor8bhg/noise"
 )
 
-func BuildBackground(width, height int) image.Image {
+func BuildBackground(width, height int, seamless bool) image.Image {
 	bg := image.NewNRGBA(image.Rect(0, 0, width, height))
 	black := color.RGBA{0, 0, 0, 255}
 	draw.Draw(bg, bg.Bounds(), &image.Uniform{black}, image.Point{}, draw.Src)
 
 	if sprites.ShouldPaintNebula() {
-		nebula := sprites.GenerateNebula(width, height)
+		nebula := sprites.GenerateNebula(width, height, seamless)
 		draw.Draw(bg, bg.Bounds(), nebula, image.Point{}, draw.Over)
 	}
 
@@ -43,14 +43,14 @@ func PaintBackground(frame *image.NRGBA, bg image.Image) {
 //
 // The seed reset ensures that static and animated frames are visually
 // consistent with each other.
-func PaintForeground(canvas *image.NRGBA, width, height int, animated bool) []image.Image {
+func PaintForeground(canvas *image.NRGBA, width, height int, animated bool, seamless bool) []image.Image {
 	rngm.ReloadSeed()
 
 	layers := make([]image.Image, 4)
-	layers[0] = paintSprite(canvas, sprites.Small, width, height, animated)
-	layers[1] = paintSprite(canvas, sprites.Medium, width, height, animated)
-	layers[2] = paintSprite(canvas, sprites.Large, width, height, animated)
-	layers[3] = paintSprite(canvas, sprites.Special, width, height, animated)
+	layers[0] = paintSprite(canvas, sprites.Small, width, height, animated, seamless)
+	layers[1] = paintSprite(canvas, sprites.Medium, width, height, animated, seamless)
+	layers[2] = paintSprite(canvas, sprites.Large, width, height, animated, seamless)
+	layers[3] = paintSprite(canvas, sprites.Special, width, height, animated, seamless)
 
 	return layers
 }
@@ -58,7 +58,7 @@ func PaintForeground(canvas *image.NRGBA, width, height int, animated bool) []im
 // paintSprite paints 0–maxLayers sprite layers of the given size onto a fresh
 // transparent canvas, composites that canvas onto frame, and returns the
 // transparent canvas as an independent layer image.
-func paintSprite(frame *image.NRGBA, spriteSize sprites.Size, width, height int, animated bool) image.Image {
+func paintSprite(frame *image.NRGBA, spriteSize sprites.Size, width, height int, animated bool, seamless bool) image.Image {
 	layer := image.NewNRGBA(image.Rect(0, 0, width, height))
 	// layer is zero-initialised: all pixels are fully transparent.
 
@@ -72,14 +72,16 @@ func paintSprite(frame *image.NRGBA, spriteSize sprites.Size, width, height int,
 		elements := sprites.GetNoOfElements(spriteSize)
 		img := sprites.GetSprite(spriteSize, animated)
 		sb := img.Bounds()
-		// To avoid sprites being painted off the edge of the canvas.
-		widthLimit := width - sb.Max.X
-		// Only width is controlled, so images in "infinite scroll" mode
-		// can be scrolled horizontally without being cut off.
 
 		for e := 1; e <= elements; e++ {
-			xC := rngm.Intn(widthLimit) + 1
+			xC := rngm.Intn(width) + 1
 			yC := rngm.Intn(height)
+
+			// With seamless: skip sprites that would overflow the right edge.
+			if seamless && xC+sb.Max.X > width {
+				continue
+			}
+
 			dp := image.Pt(xC, yC)
 			r := image.Rectangle{dp, dp.Add(sb.Size())}
 			draw.Draw(layer, r, img, sb.Min, draw.Over)

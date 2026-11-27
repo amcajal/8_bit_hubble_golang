@@ -39,6 +39,9 @@ func ConfigFromArgs(args []string) (Config, error) {
 	fs.Int64Var(&cfg.Seed, "s", cfg.Seed, "")
 	fs.Int64Var(&cfg.Seed, "seed", cfg.Seed, "")
 
+	fs.BoolVar(&cfg.Seamless, "S", false, "")
+	fs.BoolVar(&cfg.Seamless, "seamless", false, "")
+
 	fs.StringVar(&cfg.RNGConfigFile, "c", "", "")
 	fs.StringVar(&cfg.RNGConfigFile, "config", "", "")
 
@@ -97,6 +100,12 @@ OPTIONS:
 
     -p, --paletted           Restrict the output image to 256 colours from the
                              Plan 9 palette (Floyd-Steinberg dithering).
+
+    -S, --seamless           Generate a seamlessly tiling image. Sprites are
+                             kept fully within the image bounds (none are cut
+                             at the right edge), and the nebula has its right
+                             edge mirrored and faded onto its left edge so the
+                             tile seam is smooth when scrolling horizontally.
 
     -v, --version            Print the version number and exit.
 

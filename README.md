@@ -46,6 +46,9 @@ go run ./cmd/cli -s 42 -o ./output -n my_galaxy
 
 # Animated WebP with config overrides
 go run ./cmd/cli -a -s 99 -n blinking_stars -c config_example.toml
+
+# Seamlessly tiling image (suitable for infinite horizontal scroll)
+go run ./cmd/cli -S -s 42 -n seamless_galaxy
 ```
 
 Build standalone binaries:
@@ -108,6 +111,7 @@ cfg := galaxy.RenderConfig{
     Height:       500,
     Seed:         42,
     RetainLayers: true,
+    Seamless:     true,  // optional: tile seamlessly in infinite-scroll layouts
 }
 
 if err := galaxy.ApplyConfig(cfg); err != nil {
@@ -131,7 +135,7 @@ layers := data.Layers[0]
 
 | Symbol | Description |
 |---|---|
-| `RenderConfig` | Controls image generation (size, seed, animated, layers) |
+| `RenderConfig` | Controls image generation (size, seed, animated, layers, seamless tiling) |
 | `OutputConfig` | Controls file output (directory, filename, palette) |
 | `Config` | Embeds both; used by `Generate` |
 | `ApplyConfig(RenderConfig)` | Seeds the RNG — call before `RenderFrames` |
