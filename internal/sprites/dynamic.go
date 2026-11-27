@@ -48,7 +48,7 @@ func GenerateColoredPerlinNoise(w, h int, baseColor *color.RGBA) image.Image {
 	return blend.Multiply(perlin, img)
 }
 
-func GenerateNebula(w, h int) image.Image {
+func GenerateNebula(w, h int, seamless bool) image.Image {
 	nebula := GenerateColoredPerlinNoise(w, h, nil)
 
 	for i := 0; i < rngm.Intn(3)+1; i++ {
@@ -61,5 +61,61 @@ func GenerateNebula(w, h int) image.Image {
 		aux_nebula := GenerateColoredPerlinNoise(w, h, &aux_color)
 		nebula = blend.Overlay(nebula, aux_nebula)
 	}
+
+	if seamless {
+		nebula = applyNebulaSeam(nebula, w, h)
+	}
 	return nebula
+}
+
+// applyNebulaSeam returns a new image equal to src with a seam overlay on its
+// left edge. The overlay is built from the rightmost seamWidth columns of src:
+//
+//  1. Those columns are mirrored horizontally (column order reversed).
+//  2. A left-opaque → right-transparent alpha gradient is applied so the
+//     overlay blends smoothly into the existing left edge rather than
+//     replacing it abruptly.
+//  3. The result is composited over src with draw.Over.
+//
+// seamWidth = w/10, clamped to at least 1.
+func applyNebulaSeam(src image.Image, w, h int) image.Image {
+	seamWidth := w / 10
+	if seamWidth < 1 {
+		seamWidth = 1
+	}
+
+	// Build the mirrored+faded overlay strip (seamWidth × h).
+	overlay := image.NewNRGBA(image.Rect(0, 0, seamWidth, h))
+	bounds := src.Bounds()
+	for x := 0; x < seamWidth; x++ {
+		// Mirror: x=0 maps to the rightmost column of src, x=seamWidth-1 to
+		// the column at w-seamWidth (the left edge of the cut region).
+		srcX := bounds.Min.X + (w - 1 - x)
+
+		// Alpha gradient: fully opaque at x=0 (left of pasted strip) fading
+		// to fully transparent at x=seamWidth-1 (right of pasted strip).
+		var a uint8
+		if seamWidth > 1 {
+			a = uint8((seamWidth - 1 - x) * 255 / (seamWidth - 1))
+		} else {
+			a = 255
+		}
+
+		for y := 0; y < h; y++ {
+			r32, g32, b32, _ := src.At(srcX, bounds.Min.Y+y).RGBA()
+			overlay.SetNRGBA(x, y, color.NRGBA{
+				R: uint8(r32 >> 8),
+				G: uint8(g32 >> 8),
+				B: uint8(b32 >> 8),
+				A: a,
+			})
+		}
+	}
+
+	// Composite: copy src into dst, then draw overlay over its left columns.
+	dst := image.NewNRGBA(bounds)
+	draw.Draw(dst, bounds, src, bounds.Min, draw.Src)
+	seamRect := image.Rect(bounds.Min.X, bounds.Min.Y, bounds.Min.X+seamWidth, bounds.Max.Y)
+	draw.Draw(dst, seamRect, overlay, image.Point{0, 0}, draw.Over)
+	return dst
 }
