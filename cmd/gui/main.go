@@ -100,8 +100,10 @@ type appState struct {
 	heightEditor        widget.Editor     // -H / --height
 	animatedCheck       widget.Bool       // -a / --animated
 	palettedCheck       widget.Bool       // -p / --paletted
+	seamlessCheck       widget.Bool       // -S / --seamless
 	animatedTip         component.TipArea // hover tooltip for animated
 	palettedTip         component.TipArea // hover tooltip for paletted
+	seamlessTip         component.TipArea // hover tooltip for seamless
 
 	// ── Buttons ───────────────────────────────────────────────────────────
 	generateBtn  widget.Clickable
@@ -319,6 +321,7 @@ func (s *appState) handleGenerate(w *app.Window) {
 			Height:        height,
 			Seed:          seed,
 			Animated:      s.animatedCheck.Value,
+			Seamless:      s.seamlessCheck.Value,
 			RNGConfigFile: s.configFileEditor.Text(),
 		},
 		OutputConfig: galaxy.OutputConfig{
@@ -545,6 +548,18 @@ func drawAdvancedOptions(gtx layout.Context, th *material.Theme, s *appState) la
 								"Restrict the output image to 256 colours\nfrom the Plan 9 palette (Floyd-Steinberg dithering).")
 							return s.palettedTip.Layout(gtx, tip, func(gtx layout.Context) layout.Dimensions {
 								cb := material.CheckBox(th, &s.palettedCheck, "Paletted (256-colour PNG)")
+								return cb.Layout(gtx)
+							})
+						}),
+
+						layout.Rigid(vspacer(6)),
+
+						// Seamless checkbox with tooltip
+						layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+							tip := component.DesktopTooltip(th,
+								"Generate a seamlessly tiling image for infinite horizontal scroll.\nSprites are kept fully within the image bounds, and the nebula\nedge is blended so adjacent copies join without a hard cut.")
+							return s.seamlessTip.Layout(gtx, tip, func(gtx layout.Context) layout.Dimensions {
+								cb := material.CheckBox(th, &s.seamlessCheck, "Seamless (tileable image)")
 								return cb.Layout(gtx)
 							})
 						}),
